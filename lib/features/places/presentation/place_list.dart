@@ -25,3 +25,20 @@ enum PlaceList {
     collections => false,
   };
 }
+
+/// Whether [place] matches a search [query] by name, city or country,
+/// ignoring case and Spanish accents.
+bool placeMatches(Place place, String query) {
+  final needle = _fold(query.trim());
+  if (needle.isEmpty) return true;
+  return [
+    place.name,
+    place.city,
+    place.country,
+  ].any((field) => _fold(field).contains(needle));
+}
+
+const _accents = {'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ü': 'u'};
+
+String _fold(String text) =>
+    text.toLowerCase().split('').map((char) => _accents[char] ?? char).join();

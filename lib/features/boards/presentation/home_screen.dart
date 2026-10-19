@@ -8,8 +8,9 @@ import 'board_summary.dart';
 import 'home_view.dart';
 
 /// Container for "Mis lugares". The selected list lives in the URL
-/// (`?lista=`), so saving a place can land on the right list.
-class HomeScreen extends StatelessWidget {
+/// (`?lista=`), so saving a place can land on the right list; the search
+/// text is local state.
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   static String greetingFor(DateTime now) {
@@ -17,6 +18,13 @@ class HomeScreen extends StatelessWidget {
     if (now.hour < 18) return 'Buenas tardes';
     return 'Buenas noches';
   }
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _query = '';
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +40,22 @@ class HomeScreen extends StatelessWidget {
             .all()
             .map((board) => BoardSummary.of(board, scope.places))
             .toList();
+        final all = scope.places.all();
+        final places = _query.trim().isNotEmpty
+            ? all.where((place) => placeMatches(place, _query)).toList()
+            : all.where(list.includes).toList();
 
         return HomeView(
           greeting:
-              '${greetingFor(DateTime.now())}, ${scope.profile.firstName}',
-          placeCount: scope.places.all().length,
+              '${HomeScreen.greetingFor(DateTime.now())}, '
+              '${scope.profile.firstName}',
+          placeCount: all.length,
           list: list,
-          places: scope.places.all().where(list.includes).toList(),
+          query: _query,
+          places: places,
           boards: boards,
           onSelectList: (next) => context.go(Routes.myPlaces(next.slug)),
+          onQueryChanged: (query) => setState(() => _query = query),
           onOpenPlace: (id) => context.push(Routes.place(id)),
           onOpenBoard: (id) => context.push(Routes.board(id)),
         );

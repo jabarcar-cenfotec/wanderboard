@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/wander_tokens.dart';
+import '../../../shared/icons/wander_icons.dart';
 import '../../../shared/widgets/atoms/overline_label.dart';
 import '../../../shared/widgets/atoms/tag_chip.dart';
 import '../../places/domain/place.dart';
@@ -16,9 +17,11 @@ class HomeView extends StatelessWidget {
     required this.greeting,
     required this.placeCount,
     required this.list,
+    required this.query,
     required this.places,
     required this.boards,
     required this.onSelectList,
+    required this.onQueryChanged,
     required this.onOpenPlace,
     required this.onOpenBoard,
   });
@@ -27,10 +30,14 @@ class HomeView extends StatelessWidget {
   final int placeCount;
   final PlaceList list;
 
-  /// Places of [list]; ignored for [PlaceList.collections].
+  /// Search text; when not empty, [places] holds the search results.
+  final String query;
+
+  /// Places of [list] or the search results; ignored for collections.
   final List<Place> places;
   final List<BoardSummary> boards;
   final ValueChanged<PlaceList> onSelectList;
+  final ValueChanged<String> onQueryChanged;
   final ValueChanged<String> onOpenPlace;
   final ValueChanged<String> onOpenBoard;
 
@@ -49,8 +56,13 @@ class HomeView extends StatelessWidget {
         s.xxxl +
         MediaQuery.paddingOf(context).bottom;
 
+    final searching = query.trim().isNotEmpty;
+    final emptyMessage = searching
+        ? 'No hay lugares que coincidan con “${query.trim()}”.'
+        : _emptyMessages[list];
+
     final Widget content = switch (list) {
-      PlaceList.collections => SliverList.separated(
+      PlaceList.collections when !searching => SliverList.separated(
         itemCount: boards.length,
         separatorBuilder: (context, _) => SizedBox(height: s.xl),
         itemBuilder: (context, index) {
@@ -63,7 +75,7 @@ class HomeView extends StatelessWidget {
       ),
       _ when places.isEmpty => SliverToBoxAdapter(
         child: Text(
-          _emptyMessages[list]!,
+          emptyMessage!,
           style: tokens.text.body.copyWith(color: c.inkMuted),
         ),
       ),
@@ -94,6 +106,16 @@ class HomeView extends StatelessWidget {
                     Text(greeting, style: tokens.text.displayM),
                     SizedBox(height: s.xl),
                     Text('Mis lugares', style: tokens.text.titleL),
+                    SizedBox(height: s.md),
+                    TextField(
+                      onChanged: onQueryChanged,
+                      textInputAction: TextInputAction.search,
+                      style: tokens.text.body,
+                      decoration: const InputDecoration(
+                        hintText: 'Buscar en mis lugares',
+                        prefixIcon: Icon(WanderIcons.search),
+                      ),
+                    ),
                     SizedBox(height: s.md),
                     Wrap(
                       spacing: s.sm,

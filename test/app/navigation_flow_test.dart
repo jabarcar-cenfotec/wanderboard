@@ -10,7 +10,11 @@ void main() {
   }
 
   Future<void> openBoard(WidgetTester tester, String name) async {
-    await tester.scrollUntilVisible(find.text(name), 200);
+    await tester.scrollUntilVisible(
+      find.text(name),
+      200,
+      scrollable: verticalScroll(),
+    );
     await tester.tap(find.text(name));
     await tester.pumpAndSettle();
   }

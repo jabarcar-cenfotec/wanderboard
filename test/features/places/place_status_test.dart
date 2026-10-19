@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wanderboard/features/places/data/in_memory_place_repository.dart';
 import 'package:wanderboard/features/places/domain/place.dart';
+import 'package:wanderboard/features/places/presentation/place_list.dart';
 import 'package:wanderboard/features/reviews/domain/review_draft.dart';
 
 void main() {
@@ -90,5 +91,32 @@ void main() {
     );
 
     expect(place.cover.seed, isEmpty);
+  });
+
+  group('placeMatches', () {
+    const place = Place(
+      id: 'irazu',
+      name: 'Volcán Irazú',
+      city: 'Cartago',
+      country: 'Costa Rica',
+      boardIds: [],
+      rating: 0,
+      note: '',
+      photos: [],
+    );
+
+    test('matches the name ignoring case and accents', () {
+      expect(placeMatches(place, 'irazu'), isTrue);
+      expect(placeMatches(place, 'VOLCÁN'), isTrue);
+    });
+
+    test('matches the city or country', () {
+      expect(placeMatches(place, 'cartago'), isTrue);
+      expect(placeMatches(place, 'costa'), isTrue);
+    });
+
+    test('does not match unrelated text', () {
+      expect(placeMatches(place, 'kioto'), isFalse);
+    });
   });
 }

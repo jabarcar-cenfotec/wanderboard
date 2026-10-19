@@ -31,4 +31,5 @@ abstract final class WanderIcons {
   static const IconData edit = LucideIcons.squarePen;
   static const IconData globe = LucideIcons.globe;
   static const IconData bookmark = LucideIcons.bookmark;
+  static const IconData search = LucideIcons.search;
 }

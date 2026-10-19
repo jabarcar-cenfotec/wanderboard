@@ -26,3 +26,11 @@ Widget themed(Widget child) {
     home: Scaffold(body: Center(child: child)),
   );
 }
+
+/// The page's vertical scroll view, ignoring single-line text fields.
+Finder verticalScroll() => find
+    .byWidgetPredicate(
+      (widget) =>
+          widget is Scrollable && widget.axisDirection == AxisDirection.down,
+    )
+    .first;

@@ -31,7 +31,11 @@ void main() {
   }
 
   Future<void> openPlace(WidgetTester tester, String name) async {
-    await tester.scrollUntilVisible(find.text(name), 200);
+    await tester.scrollUntilVisible(
+      find.text(name),
+      200,
+      scrollable: verticalScroll(),
+    );
     await tester.tap(find.text(name));
     await tester.pumpAndSettle();
   }
@@ -44,7 +48,11 @@ void main() {
       .first;
 
   Future<void> showList(WidgetTester tester, String list) async {
-    await tester.scrollUntilVisible(find.text(list), -200);
+    await tester.scrollUntilVisible(
+      find.text(list),
+      -200,
+      scrollable: verticalScroll(),
+    );
     await tester.tap(find.text(list));
     await tester.pumpAndSettle();
   }
@@ -143,7 +151,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Catarata del Toro'), findsNothing);
     await showList(tester, 'Historial');
-    await tester.scrollUntilVisible(find.text('Catarata del Toro'), 200);
+    await tester.scrollUntilVisible(
+      find.text('Catarata del Toro'),
+      200,
+      scrollable: verticalScroll(),
+    );
     expect(find.text('Catarata del Toro'), findsOneWidget);
   });
 
@@ -164,7 +176,45 @@ void main() {
     await showList(tester, 'Colecciones');
     await tester.tap(find.text('Costa Rica sin prisa'));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.text('Catarata del Toro'), 200);
+    await tester.scrollUntilVisible(
+      find.text('Catarata del Toro'),
+      200,
+      scrollable: verticalScroll(),
+    );
     expect(find.text('Catarata del Toro'), findsOneWidget);
+  });
+
+  testWidgets('CU-03: a place can be found by searching its name', (
+    tester,
+  ) async {
+    await pumpWanderApp(tester);
+    await signIn(tester);
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Buscar en mis lugares'),
+      'toro',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Catarata del Toro'), findsOneWidget);
+    expect(find.text('Costa Rica sin prisa'), findsNothing);
+
+    await tester.tap(find.text('Catarata del Toro'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PlaceDetailScreen), findsOneWidget);
+  });
+
+  testWidgets('CU-03: a search without results says so', (tester) async {
+    await pumpWanderApp(tester);
+    await signIn(tester);
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Buscar en mis lugares'),
+      'zzz',
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No hay lugares que coincidan con “zzz”.'),
+      findsOneWidget,
+    );
   });
 }
