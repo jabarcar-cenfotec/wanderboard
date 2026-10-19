@@ -28,5 +28,5 @@ class BoardSummary {
   final List<String> photoSeeds;
   final int placeCount;
 
-  String get countLabel => placeCount == 1 ? '1 place' : '$placeCount places';
+  String get countLabel => placeCount == 1 ? '1 lugar' : '$placeCount lugares';
 }

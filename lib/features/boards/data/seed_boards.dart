@@ -11,26 +11,26 @@ const seedBoards = [
   Board(
     id: BoardIds.costaRica,
     title: 'Costa Rica sin prisa',
-    note: 'home, but slower',
+    note: 'en casa, pero sin prisa',
     coverPlaceId: 'arenal-bridges',
     featured: true,
   ),
   Board(
     id: BoardIds.kyoto,
     title: 'Kioto bajo la lluvia',
-    note: 'umbrellas & maple leaves',
+    note: 'paraguas y hojas de arce',
     coverPlaceId: 'philosophers-path',
   ),
   Board(
     id: BoardIds.viewpoints,
     title: 'Miradores tranquilos',
-    note: 'go early, stay long',
+    note: 'llegar temprano, quedarse mucho',
     coverPlaceId: 'miradouro-graca',
   ),
   Board(
     id: BoardIds.coffee,
     title: 'Rincones de café',
-    note: 'worth every detour',
+    note: 'valen cada desvío',
     coverPlaceId: 'barrio-escalante',
   ),
 ];
