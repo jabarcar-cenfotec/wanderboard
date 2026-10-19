@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/wander_tokens.dart';
 import '../../../../shared/widgets/atoms/place_image.dart';
 import '../../../../shared/widgets/atoms/pressable.dart';
-import '../../../../shared/widgets/atoms/tag_chip.dart';
 import '../../domain/place.dart';
 import 'place_polaroid_card.dart';
+import 'status_badge.dart';
 
 /// Compact row for the "Pendientes" and "Historial" lists.
 class PlaceRowCard extends StatelessWidget {
@@ -58,7 +58,7 @@ class PlaceRowCard extends StatelessWidget {
                     runSpacing: s.xs,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      TagChip(label: place.status.label, selected: true),
+                      StatusBadge(status: place.status),
                       if (place.visitedOn != null)
                         Text(
                           polaroidCaption(place),

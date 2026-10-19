@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/wander_tokens.dart';
 import '../../icons/wander_icons.dart';
 
-/// Photo loaded from picsum by a stable seed.
+/// Photo loaded from picsum: `id:<n>` picks a curated image, any other seed
+/// a stable random one; an empty seed renders a placeholder.
 ///
 /// While loading or when offline it falls back to the `mistLake` gradient
 /// with a soft icon, so the layout never breaks.
@@ -26,11 +27,25 @@ class PlaceImage extends StatelessWidget {
   String get url {
     final ratio = aspectRatio ?? 1;
     final pixelHeight = (pixelWidth / ratio).round();
-    return 'https://picsum.photos/seed/$seed/$pixelWidth/$pixelHeight';
+    final source = seed.startsWith('id:')
+        ? 'id/${seed.substring(3)}'
+        : 'seed/$seed';
+    return 'https://picsum.photos/$source/$pixelWidth/$pixelHeight';
   }
 
   @override
   Widget build(BuildContext context) {
+    if (seed.isEmpty) {
+      final placeholder = ClipRRect(
+        borderRadius: borderRadius,
+        child: const _MistPlaceholder(showIcon: true, icon: WanderIcons.pin),
+      );
+      final ratio = aspectRatio;
+      return ratio == null
+          ? placeholder
+          : AspectRatio(aspectRatio: ratio, child: placeholder);
+    }
+
     final image = ClipRRect(
       borderRadius: borderRadius,
       child: Image.network(
@@ -56,9 +71,13 @@ class PlaceImage extends StatelessWidget {
 }
 
 class _MistPlaceholder extends StatelessWidget {
-  const _MistPlaceholder({required this.showIcon});
+  const _MistPlaceholder({
+    required this.showIcon,
+    this.icon = WanderIcons.photo,
+  });
 
   final bool showIcon;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +87,7 @@ class _MistPlaceholder extends StatelessWidget {
       child: showIcon
           ? Center(
               child: Icon(
-                WanderIcons.photo,
+                icon,
                 color: tokens.colors.card.withValues(alpha: 0.8),
                 size: tokens.sizes.icon,
               ),

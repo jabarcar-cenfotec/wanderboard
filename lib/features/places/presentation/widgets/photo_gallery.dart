@@ -32,7 +32,9 @@ class _PhotoGalleryState extends State<PhotoGallery> {
   Widget build(BuildContext context) {
     final tokens = context.wander;
     final s = tokens.spacing;
-    final photos = widget.place.photos;
+    final photos = widget.place.photos.isEmpty
+        ? [widget.place.cover]
+        : widget.place.photos;
 
     return ClipRRect(
       borderRadius: BorderRadius.vertical(

@@ -9,6 +9,7 @@ import '../../../shared/widgets/atoms/wander_buttons.dart';
 import '../domain/place.dart';
 import 'widgets/map_placeholder.dart';
 import 'widgets/photo_gallery.dart';
+import 'widgets/status_badge.dart';
 
 class PlaceDetailView extends StatelessWidget {
   const PlaceDetailView({
@@ -66,7 +67,7 @@ class PlaceDetailView extends StatelessWidget {
                 SizedBox(height: s.md),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: TagChip(label: place.status.label, selected: true),
+                  child: StatusBadge(status: place.status),
                 ),
                 if (place.visitedOn case final visitedOn?) ...[
                   SizedBox(height: s.sm),

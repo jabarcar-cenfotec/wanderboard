@@ -14,6 +14,7 @@ class OnboardingScreen extends StatelessWidget {
     final scope = AppScope.of(context);
     final photoSeeds = scope.places
         .all()
+        .where((place) => place.photos.isNotEmpty)
         .take(3)
         .map((place) => place.cover.seed)
         .toList();

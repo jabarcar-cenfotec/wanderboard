@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 class PlacePhoto {
   const PlacePhoto(this.seed, {this.aspectRatio = 0.8});
 
+  /// No photo yet: rendered as a neutral placeholder.
+  static const none = PlacePhoto('');
+
   final String seed;
   final double aspectRatio;
 }
@@ -60,9 +63,8 @@ class Place {
   final List<PlacePhoto> photos;
   final List<String> tags;
 
-  /// First photo, or a stable reference image when there are none yet.
-  PlacePhoto get cover =>
-      photos.isNotEmpty ? photos.first : PlacePhoto('wb-$id');
+  /// First photo, or [PlacePhoto.none] when there are no photos yet.
+  PlacePhoto get cover => photos.isNotEmpty ? photos.first : PlacePhoto.none;
 
   String get location =>
       [city, country].where((part) => part.trim().isNotEmpty).join(', ');

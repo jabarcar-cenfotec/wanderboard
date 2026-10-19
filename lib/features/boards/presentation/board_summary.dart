@@ -19,7 +19,11 @@ class BoardSummary {
     final ordered = <Place>[?cover, ...inBoard.where((p) => p.id != cover?.id)];
     return BoardSummary(
       board: board,
-      photoSeeds: ordered.take(3).map((p) => p.cover.seed).toList(),
+      photoSeeds: ordered
+          .where((p) => p.photos.isNotEmpty)
+          .take(3)
+          .map((p) => p.cover.seed)
+          .toList(),
       placeCount: inBoard.length,
     );
   }

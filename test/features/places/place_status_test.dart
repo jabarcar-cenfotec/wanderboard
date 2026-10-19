@@ -77,7 +77,7 @@ void main() {
     });
   });
 
-  test('a place without photos still has a cover image', () {
+  test('a place without photos gets a placeholder cover', () {
     const place = Place(
       id: 'p1',
       name: 'Mercado Central',
@@ -89,6 +89,6 @@ void main() {
       photos: [],
     );
 
-    expect(place.cover.seed, isNotEmpty);
+    expect(place.cover.seed, isEmpty);
   });
 }
