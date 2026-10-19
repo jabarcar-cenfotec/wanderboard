@@ -17,6 +17,7 @@ class ReviewDraft {
     this.boardIds = const [],
     this.tags = const [],
     this.visitedOn,
+    this.status = PlaceStatus.wantToVisit,
   });
 
   factory ReviewDraft.fromPlace(Place place) {
@@ -31,6 +32,7 @@ class ReviewDraft {
       boardIds: place.boardIds,
       tags: place.tags,
       visitedOn: place.visitedOn,
+      status: place.status,
     );
   }
 
@@ -45,11 +47,12 @@ class ReviewDraft {
   final List<String> boardIds;
   final List<String> tags;
   final DateTime? visitedOn;
+  final PlaceStatus status;
 
   bool get isEditing => placeId != null;
 
-  bool get canSave =>
-      name.trim().isNotEmpty && photos.isNotEmpty && boardIds.isNotEmpty;
+  /// Only the name is required; everything else can be completed later.
+  bool get canSave => name.trim().isNotEmpty;
 
   ReviewDraft copyWith({
     String? name,
@@ -59,6 +62,7 @@ class ReviewDraft {
     int? rating,
     String? note,
     List<String>? boardIds,
+    PlaceStatus? status,
   }) {
     return ReviewDraft(
       placeId: placeId,
@@ -71,6 +75,7 @@ class ReviewDraft {
       boardIds: boardIds ?? this.boardIds,
       tags: tags,
       visitedOn: visitedOn,
+      status: status ?? this.status,
     );
   }
 }
@@ -86,12 +91,15 @@ class SaveReview {
     final place = Place(
       id: draft.placeId ?? _places.nextId(),
       name: draft.name.trim(),
-      city: city.isEmpty ? 'Somewhere' : city,
+      city: city,
       country: draft.country.trim(),
       boardIds: draft.boardIds,
-      rating: draft.rating.clamp(1, 5),
+      rating: draft.rating.clamp(0, 5),
       note: draft.note.trim(),
-      visitedOn: draft.visitedOn ?? now ?? DateTime.now(),
+      status: draft.status,
+      visitedOn: draft.status.isPending
+          ? null
+          : draft.visitedOn ?? now ?? DateTime.now(),
       photos: draft.photos,
       tags: draft.tags,
     );

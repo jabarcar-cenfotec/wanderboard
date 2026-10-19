@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/wander_tokens.dart';
-import '../../../../core/utils/date_format.dart';
+import '../../../places/presentation/widgets/place_polaroid_card.dart';
 import '../../../../shared/icons/wander_icons.dart';
 import '../../../../shared/widgets/atoms/drop_in.dart';
 import '../../../../shared/widgets/atoms/place_image.dart';
@@ -15,7 +15,7 @@ Future<void> showSavedDropIn(BuildContext context, Place place) {
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Saved',
+    barrierLabel: 'Guardado',
     barrierColor: tokens.colors.ink.withValues(alpha: 0.25),
     transitionDuration: tokens.motion.base,
     pageBuilder: (context, _, _) => _SavedDropIn(place: place),
@@ -60,7 +60,7 @@ class _SavedDropInState extends State<_SavedDropIn> {
                 width: width,
                 child: PolaroidFrame(
                   lifted: true,
-                  caption: formatShortDate(widget.place.visitedOn),
+                  caption: polaroidCaption(widget.place),
                   photo: PlaceImage(
                     seed: widget.place.cover.seed,
                     aspectRatio: widget.place.cover.aspectRatio,
@@ -81,7 +81,7 @@ class _SavedDropInState extends State<_SavedDropIn> {
                 children: [
                   Icon(WanderIcons.check, color: tokens.colors.success),
                   SizedBox(width: s.sm),
-                  Text('Saved to your diary', style: tokens.text.bodyStrong),
+                  Text('Guardado en tu diario', style: tokens.text.bodyStrong),
                 ],
               ),
             ),

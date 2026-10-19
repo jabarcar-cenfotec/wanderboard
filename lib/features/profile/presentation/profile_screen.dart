@@ -28,7 +28,8 @@ class ProfileScreen extends StatelessWidget {
           places: scope.places.all(),
           boardCount: scope.boards.all().length,
         ),
-        onSettingTap: (setting) => mock('$setting is not part of this mockup'),
+        onSettingTap: (setting) =>
+            mock('$setting no forma parte de este prototipo'),
         onSignOut: () {
           scope.auth.signOut();
           context.go(Routes.onboarding);

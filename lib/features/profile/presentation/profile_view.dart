@@ -70,9 +70,9 @@ class ProfileView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                StatCircle(value: stats.places, label: 'places'),
-                StatCircle(value: stats.boards, label: 'boards'),
-                StatCircle(value: stats.cities, label: 'cities'),
+                StatCircle(value: stats.places, label: 'lugares'),
+                StatCircle(value: stats.boards, label: 'colecciones'),
+                StatCircle(value: stats.cities, label: 'ciudades'),
               ],
             ),
             SizedBox(height: s.xxl),
@@ -80,27 +80,27 @@ class ProfileView extends StatelessWidget {
               children: [
                 _SettingTile(
                   icon: WanderIcons.lock,
-                  title: 'Privacy',
-                  subtitle: 'Boards are private by default',
-                  onTap: () => onSettingTap('Privacy'),
+                  title: 'Privacidad',
+                  subtitle: 'Tus colecciones son privadas por defecto',
+                  onTap: () => onSettingTap('Privacidad'),
                 ),
                 _SettingTile(
                   icon: WanderIcons.bell,
-                  title: 'Reminders',
-                  subtitle: 'Nudge me to write after a trip',
-                  onTap: () => onSettingTap('Reminders'),
+                  title: 'Recordatorios',
+                  subtitle: 'Avisarme para escribir después de un viaje',
+                  onTap: () => onSettingTap('Recordatorios'),
                 ),
                 _SettingTile(
                   icon: WanderIcons.appearance,
-                  title: 'Appearance',
-                  subtitle: 'Paper (light)',
-                  onTap: () => onSettingTap('Appearance'),
+                  title: 'Apariencia',
+                  subtitle: 'Papel (claro)',
+                  onTap: () => onSettingTap('Apariencia'),
                 ),
                 _SettingTile(
                   icon: WanderIcons.export,
-                  title: 'Export my diary',
-                  subtitle: 'PDF scrapbook or photos',
-                  onTap: () => onSettingTap('Export'),
+                  title: 'Exportar mi diario',
+                  subtitle: 'Álbum en PDF o fotos',
+                  onTap: () => onSettingTap('Exportar'),
                 ),
               ],
             ),
@@ -109,7 +109,7 @@ class ProfileView extends StatelessWidget {
               children: [
                 _SettingTile(
                   icon: WanderIcons.signOut,
-                  title: 'Sign out',
+                  title: 'Cerrar sesión',
                   subtitle: profile.email,
                   onTap: onSignOut,
                   showChevron: false,

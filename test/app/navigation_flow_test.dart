@@ -5,7 +5,7 @@ import '../helpers/pump_app.dart';
 
 void main() {
   Future<void> signIn(WidgetTester tester) async {
-    await tester.tap(find.text('Start my diary'));
+    await tester.tap(find.text('Empezar mi diario'));
     await tester.pumpAndSettle();
   }
 
@@ -18,50 +18,54 @@ void main() {
   testWidgets('app boots into onboarding', (tester) async {
     await pumpWanderApp(tester);
 
-    expect(find.text('Your private diary of places'), findsOneWidget);
-    expect(find.text('Start my diary'), findsOneWidget);
+    expect(find.text('Tu diario privado de lugares'), findsOneWidget);
+    expect(find.text('Empezar mi diario'), findsOneWidget);
   });
 
-  testWidgets('signing in lands on Home with the boards', (tester) async {
+  testWidgets('signing in lands on Mis lugares with the collections', (
+    tester,
+  ) async {
     await pumpWanderApp(tester);
     await signIn(tester);
 
-    expect(find.text('My boards'), findsOneWidget);
-    expect(find.text('Costa Rica Slow Days'), findsOneWidget);
+    expect(find.text('Mis lugares'), findsWidgets);
+    expect(find.text('Pendientes'), findsOneWidget);
+    expect(find.text('Historial'), findsOneWidget);
+    expect(find.text('Costa Rica sin prisa'), findsOneWidget);
   });
 
-  testWidgets('tapping a board shows its places', (tester) async {
+  testWidgets('tapping a collection shows its places', (tester) async {
     await pumpWanderApp(tester);
     await signIn(tester);
-    await openBoard(tester, 'Costa Rica Slow Days');
+    await openBoard(tester, 'Costa Rica sin prisa');
 
-    expect(find.text('Arenal Hanging Bridges'), findsOneWidget);
-    expect(find.text('Monteverde Cloud Forest'), findsOneWidget);
+    expect(find.text('Puentes Colgantes del Arenal'), findsOneWidget);
+    expect(find.text('Bosque Nuboso de Monteverde'), findsOneWidget);
   });
 
-  testWidgets('tapping a place opens its private review', (tester) async {
+  testWidgets('tapping a place opens its private note', (tester) async {
     await pumpWanderApp(tester);
     await signIn(tester);
-    await openBoard(tester, 'Costa Rica Slow Days');
+    await openBoard(tester, 'Costa Rica sin prisa');
 
-    await tester.ensureVisible(find.text('Arenal Hanging Bridges'));
+    await tester.ensureVisible(find.text('Puentes Colgantes del Arenal'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Arenal Hanging Bridges'));
+    await tester.tap(find.text('Puentes Colgantes del Arenal'));
     await tester.pumpAndSettle();
 
     expect(find.byType(PlaceDetailScreen), findsOneWidget);
-    expect(find.text('My private note'), findsOneWidget);
+    expect(find.text('Mi nota privada'), findsOneWidget);
   });
 
-  testWidgets('bottom nav opens Profile with stat circles', (tester) async {
+  testWidgets('bottom nav opens Perfil with stat circles', (tester) async {
     await pumpWanderApp(tester);
     await signIn(tester);
 
-    await tester.tap(find.text('Profile'));
+    await tester.tap(find.text('Perfil'));
     await tester.pumpAndSettle();
 
-    expect(find.text('places'), findsOneWidget);
-    expect(find.text('boards'), findsOneWidget);
-    expect(find.text('cities'), findsOneWidget);
+    expect(find.text('lugares'), findsOneWidget);
+    expect(find.text('colecciones'), findsOneWidget);
+    expect(find.text('ciudades'), findsOneWidget);
   });
 }

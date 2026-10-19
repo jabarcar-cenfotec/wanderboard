@@ -10,26 +10,26 @@ abstract final class BoardIds {
 const seedBoards = [
   Board(
     id: BoardIds.costaRica,
-    title: 'Costa Rica Slow Days',
+    title: 'Costa Rica sin prisa',
     note: 'home, but slower',
     coverPlaceId: 'arenal-bridges',
     featured: true,
   ),
   Board(
     id: BoardIds.kyoto,
-    title: 'Kyoto in the Rain',
+    title: 'Kioto bajo la lluvia',
     note: 'umbrellas & maple leaves',
     coverPlaceId: 'philosophers-path',
   ),
   Board(
     id: BoardIds.viewpoints,
-    title: 'Quiet Viewpoints',
+    title: 'Miradores tranquilos',
     note: 'go early, stay long',
     coverPlaceId: 'miradouro-graca',
   ),
   Board(
     id: BoardIds.coffee,
-    title: 'Coffee Corners',
+    title: 'Rincones de café',
     note: 'worth every detour',
     coverPlaceId: 'barrio-escalante',
   ),

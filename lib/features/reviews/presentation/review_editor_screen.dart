@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/app_scope.dart';
 import '../../../core/navigation/routes.dart';
 import '../../places/domain/place.dart';
+import '../../places/presentation/place_list.dart';
 import '../data/mock_photo_library.dart';
 import '../domain/review_draft.dart';
 import 'review_editor_view.dart';
@@ -11,13 +12,21 @@ import 'widgets/saved_drop_in_dialog.dart';
 
 /// Container for Add / Edit review. Owns the draft; the view is stateless.
 class ReviewEditorScreen extends StatefulWidget {
-  const ReviewEditorScreen({super.key, this.placeId, this.initialBoardId});
+  const ReviewEditorScreen({
+    super.key,
+    this.placeId,
+    this.initialBoardId,
+    this.registerVisit = false,
+  });
 
   /// Set when editing an existing place.
   final String? placeId;
 
   /// Preselected board when adding from a board.
   final String? initialBoardId;
+
+  /// Opens an existing place with its status set to "Ya visité" (CU-02).
+  final bool registerVisit;
 
   @override
   State<ReviewEditorScreen> createState() => _ReviewEditorScreenState();
@@ -45,7 +54,10 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
         : AppScope.of(context).places.byId(widget.placeId!);
     _draft = existing != null
         ? ReviewDraft.fromPlace(existing)
-        : ReviewDraft(rating: 4, boardIds: [?widget.initialBoardId]);
+        : ReviewDraft(boardIds: [?widget.initialBoardId]);
+    if (existing != null && widget.registerVisit) {
+      _draft = _draft.copyWith(status: PlaceStatus.visited);
+    }
     _name.text = _draft.name;
     _city.text = _draft.city;
     _country.text = _draft.country;
@@ -112,7 +124,8 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
     if (_draft.isEditing) {
       context.pop();
     } else {
-      context.pushReplacement(Routes.board(place.boardIds.first));
+      // CU-01: the new place shows up in its list of "Mis lugares".
+      context.go(Routes.myPlaces(PlaceList.of(place.status).slug));
     }
   }
 
@@ -126,7 +139,14 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
       ...mockPhotoLibrary,
     ];
 
+    final title = !_draft.isEditing
+        ? 'Agregar lugar'
+        : widget.registerVisit
+        ? 'Registrar visita'
+        : 'Editar registro';
+
     return ReviewEditorView(
+      title: title,
       isEditing: _draft.isEditing,
       draft: _draft,
       boards: scope.boards.all(),
@@ -139,8 +159,9 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
       onTextChanged: _syncText,
       onTogglePhoto: _togglePhoto,
       onOpenCamera: () =>
-          _showMock('The camera is not available in this mockup'),
+          _showMock('La cámara no está disponible en este prototipo'),
       onRatingChanged: (rating) => _update(_draft.copyWith(rating: rating)),
+      onStatusChanged: (status) => _update(_draft.copyWith(status: status)),
       onToggleBoard: _toggleBoard,
       onClose: () => context.canPop() ? context.pop() : context.go(Routes.home),
       onSave: _saving ? null : _save,

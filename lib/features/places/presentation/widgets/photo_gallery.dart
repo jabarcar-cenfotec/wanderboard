@@ -75,12 +75,12 @@ class _PhotoGalleryState extends State<PhotoGallery> {
                   children: [
                     FrostedIconButton(
                       icon: WanderIcons.back,
-                      tooltip: 'Back',
+                      tooltip: 'Volver',
                       onPressed: widget.onBack,
                     ),
                     FrostedIconButton(
                       icon: WanderIcons.edit,
-                      tooltip: 'Edit review',
+                      tooltip: 'Editar registro',
                       onPressed: widget.onEdit,
                     ),
                   ],

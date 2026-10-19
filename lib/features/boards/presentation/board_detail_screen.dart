@@ -35,7 +35,9 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     final board = scope.boards.byId(widget.boardId);
 
     if (board == null) {
-      return const Scaffold(body: Center(child: Text('Board not found')));
+      return const Scaffold(
+        body: Center(child: Text('Colección no encontrada')),
+      );
     }
 
     return ListenableBuilder(

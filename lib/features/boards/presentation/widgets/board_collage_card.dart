@@ -25,7 +25,7 @@ class BoardCollageCard extends StatelessWidget {
 
     return Pressable(
       onTap: onTap,
-      semanticLabel: 'Open board ${summary.board.title}',
+      semanticLabel: 'Abrir colección ${summary.board.title}',
       builder: (context, pressed) {
         Widget collage = AnimatedContainer(
           duration: tokens.motion.fast,

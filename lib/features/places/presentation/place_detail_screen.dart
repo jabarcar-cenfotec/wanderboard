@@ -20,7 +20,9 @@ class PlaceDetailScreen extends StatelessWidget {
       builder: (context, _) {
         final place = scope.places.byId(placeId);
         if (place == null) {
-          return const Scaffold(body: Center(child: Text('Place not found')));
+          return const Scaffold(
+            body: Center(child: Text('Lugar no encontrado')),
+          );
         }
         final boardTitles = [
           for (final id in place.boardIds) ?scope.boards.byId(id)?.title,
@@ -32,6 +34,7 @@ class PlaceDetailScreen extends StatelessWidget {
           onBack: () =>
               context.canPop() ? context.pop() : context.go(Routes.home),
           onEdit: () => context.push(Routes.editPlace(place.id)),
+          onRegisterVisit: () => context.push(Routes.registerVisit(place.id)),
         );
       },
     );

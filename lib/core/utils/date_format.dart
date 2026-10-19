@@ -1,22 +1,22 @@
 const _months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  'enero',
+  'febrero',
+  'marzo',
+  'abril',
+  'mayo',
+  'junio',
+  'julio',
+  'agosto',
+  'septiembre',
+  'octubre',
+  'noviembre',
+  'diciembre',
 ];
 
-/// "14 March 2025" — used for handwritten visit dates.
+/// "14 de marzo de 2025" — used for handwritten visit dates.
 String formatVisitDate(DateTime date) =>
-    '${date.day} ${_months[date.month - 1]} ${date.year}';
+    '${date.day} de ${_months[date.month - 1]} de ${date.year}';
 
-/// "Mar 2025" — compact variant for polaroid strips.
+/// "mar 2025" — compact variant for polaroid strips.
 String formatShortDate(DateTime date) =>
     '${_months[date.month - 1].substring(0, 3)} ${date.year}';

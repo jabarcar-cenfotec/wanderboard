@@ -17,12 +17,16 @@ class PlaceDetailView extends StatelessWidget {
     required this.boardTitles,
     required this.onBack,
     required this.onEdit,
+    required this.onRegisterVisit,
   });
 
   final Place place;
   final List<String> boardTitles;
   final VoidCallback onBack;
   final VoidCallback onEdit;
+
+  /// Opens the editor with the status set to "Ya visité" (CU-02).
+  final VoidCallback onRegisterVisit;
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +63,22 @@ class PlaceDetailView extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: s.sm),
-                Text(
-                  'visited ${formatVisitDate(place.visitedOn)}',
-                  style: tokens.handNote.copyWith(color: c.slate),
+                SizedBox(height: s.md),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TagChip(label: place.status.label, selected: true),
                 ),
-                SizedBox(height: s.lg),
-                RatingCircles(rating: place.rating),
+                if (place.visitedOn case final visitedOn?) ...[
+                  SizedBox(height: s.sm),
+                  Text(
+                    'Visitado el ${formatVisitDate(visitedOn)}',
+                    style: tokens.handNote.copyWith(color: c.slate),
+                  ),
+                ],
+                if (place.rating > 0) ...[
+                  SizedBox(height: s.lg),
+                  RatingCircles(rating: place.rating),
+                ],
                 SizedBox(height: s.xl),
                 _PrivateNote(note: place.note),
                 if (place.tags.isNotEmpty) ...[
@@ -81,18 +94,31 @@ class PlaceDetailView extends StatelessWidget {
                 if (boardTitles.isNotEmpty) ...[
                   SizedBox(height: s.lg),
                   Text(
-                    'Pinned to ${boardTitles.join(' · ')}',
+                    'En las colecciones: ${boardTitles.join(' · ')}',
                     style: tokens.text.caption.copyWith(color: c.inkMuted),
                   ),
                 ],
                 SizedBox(height: s.xl),
                 MapPlaceholder(label: place.city),
                 SizedBox(height: s.xl),
-                PrimaryButton(
-                  label: 'Edit review',
-                  icon: WanderIcons.edit,
-                  onPressed: onEdit,
-                ),
+                if (place.status.isPending) ...[
+                  PrimaryButton(
+                    label: 'Registrar visita',
+                    icon: WanderIcons.check,
+                    onPressed: onRegisterVisit,
+                  ),
+                  SizedBox(height: s.md),
+                  SecondaryButton(
+                    label: 'Editar registro',
+                    icon: WanderIcons.edit,
+                    onPressed: onEdit,
+                  ),
+                ] else
+                  PrimaryButton(
+                    label: 'Editar registro',
+                    icon: WanderIcons.edit,
+                    onPressed: onEdit,
+                  ),
               ],
             ),
           ),
@@ -126,19 +152,19 @@ class _PrivateNote extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text('My private note', style: tokens.text.titleM),
+                child: Text('Mi nota privada', style: tokens.text.titleM),
               ),
               Icon(WanderIcons.lock, size: s.lg + s.xs, color: c.inkMuted),
               SizedBox(width: s.xs),
               Text(
-                'Only you',
+                'Solo tú',
                 style: tokens.text.caption.copyWith(color: c.inkMuted),
               ),
             ],
           ),
           SizedBox(height: s.sm),
           Text(
-            note.isEmpty ? 'No words yet — just the feeling.' : note,
+            note.isEmpty ? 'Todavía no hay nota.' : note,
             style: tokens.text.body,
           ),
         ],

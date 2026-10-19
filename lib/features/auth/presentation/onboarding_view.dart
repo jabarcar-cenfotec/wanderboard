@@ -38,22 +38,25 @@ class OnboardingView extends StatelessWidget {
                     PolaroidCollage(seeds: photoSeeds),
                     SizedBox(height: s.xxxl),
                     Text(
-                      'Your private diary of places',
+                      'Tu diario privado de lugares',
                       style: tokens.text.displayL,
                     ),
                     SizedBox(height: s.md),
                     Text(
-                      'Pin the corners of the world you loved, keep honest '
-                      'notes, and revisit them like an old scrapbook.',
+                      'Guarda los lugares que quieres conocer, registra tus '
+                      'visitas y vuelve a ellas como a un álbum de recuerdos.',
                       style: tokens.text.body.copyWith(
                         color: tokens.colors.inkMuted,
                       ),
                     ),
                     SizedBox(height: s.xxl),
-                    PrimaryButton(label: 'Start my diary', onPressed: onStart),
+                    PrimaryButton(
+                      label: 'Empezar mi diario',
+                      onPressed: onStart,
+                    ),
                     SizedBox(height: s.md),
                     GhostButton(
-                      label: 'I already have an account',
+                      label: 'Ya tengo una cuenta',
                       onPressed: onSignIn,
                     ),
                     SizedBox(height: s.lg),
@@ -68,7 +71,7 @@ class OnboardingView extends StatelessWidget {
                         SizedBox(width: s.xs),
                         Flexible(
                           child: Text(
-                            'Private by default. You choose what to share.',
+                            'Privado por defecto. Tú decides qué compartir.',
                             style: tokens.text.caption.copyWith(
                               color: tokens.colors.inkMuted,
                             ),

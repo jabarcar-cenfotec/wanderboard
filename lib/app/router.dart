@@ -52,8 +52,10 @@ GoRouter createRouter() {
           GoRoute(
             parentNavigatorKey: rootKey,
             path: 'edit',
-            builder: (context, state) =>
-                ReviewEditorScreen(placeId: state.pathParameters['placeId']),
+            builder: (context, state) => ReviewEditorScreen(
+              placeId: state.pathParameters['placeId'],
+              registerVisit: state.uri.queryParameters['visita'] == '1',
+            ),
           ),
         ],
       ),

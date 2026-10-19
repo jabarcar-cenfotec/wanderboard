@@ -30,7 +30,7 @@ class RatingCircles extends StatelessWidget {
         : tokens.spacing.sm;
 
     return Semantics(
-      label: 'Rating $rating of $max',
+      label: 'Valoración $rating de $max',
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

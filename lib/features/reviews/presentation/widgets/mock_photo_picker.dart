@@ -60,7 +60,7 @@ class _CameraTile extends StatelessWidget {
     final tokens = context.wander;
     return Pressable(
       onTap: onTap,
-      semanticLabel: 'Take a photo',
+      semanticLabel: 'Tomar foto',
       builder: (context, _) => Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(tokens.radii.sm),
@@ -76,7 +76,7 @@ class _CameraTile extends StatelessWidget {
             Icon(WanderIcons.camera, color: tokens.colors.inkMuted),
             SizedBox(height: tokens.spacing.xs),
             Text(
-              'Camera',
+              'Cámara',
               style: tokens.text.caption.copyWith(
                 color: tokens.colors.inkMuted,
               ),
@@ -108,7 +108,7 @@ class _PhotoTile extends StatelessWidget {
 
     return Pressable(
       onTap: onTap,
-      semanticLabel: isSelected ? 'Deselect photo' : 'Select photo',
+      semanticLabel: isSelected ? 'Quitar foto' : 'Seleccionar foto',
       builder: (context, _) => Stack(
         fit: StackFit.expand,
         children: [

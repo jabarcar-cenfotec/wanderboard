@@ -63,11 +63,11 @@ class _ShareBoardSheetState extends State<ShareBoardSheet> {
           children: [
             const Center(child: GrabHandle()),
             SizedBox(height: s.xl),
-            Text('Share board', style: tokens.text.titleL),
+            Text('Compartir colección', style: tokens.text.titleL),
             SizedBox(height: s.xs),
             Text(
-              'People with the link can see photos and places. '
-              'Your notes stay private unless you include them.',
+              'Quienes tengan el enlace verán las fotos y los lugares. '
+              'Tus notas siguen privadas, salvo que decidas incluirlas.',
               style: tokens.text.caption.copyWith(color: c.inkMuted),
             ),
             SizedBox(height: s.xl),
@@ -79,7 +79,7 @@ class _ShareBoardSheetState extends State<ShareBoardSheet> {
                 SizedBox(width: s.md),
                 Expanded(
                   child: Text(
-                    'Include my private notes',
+                    'Incluir mis notas privadas',
                     style: tokens.text.body,
                   ),
                 ),
@@ -95,31 +95,33 @@ class _ShareBoardSheetState extends State<ShareBoardSheet> {
               children: [
                 _ShareOption(
                   icon: WanderIcons.copy,
-                  label: 'Copy link',
-                  onTap: () => widget.onAction('Link copied'),
+                  label: 'Copiar',
+                  onTap: () => widget.onAction('Enlace copiado'),
                 ),
                 _ShareOption(
                   icon: WanderIcons.message,
-                  label: 'Message',
-                  onTap: () => widget.onAction('Sent as a message (mock)'),
+                  label: 'Mensaje',
+                  onTap: () =>
+                      widget.onAction('Enviado como mensaje (simulado)'),
                 ),
                 _ShareOption(
                   icon: WanderIcons.email,
-                  label: 'Email',
-                  onTap: () => widget.onAction('Email draft ready (mock)'),
+                  label: 'Correo',
+                  onTap: () =>
+                      widget.onAction('Borrador de correo listo (simulado)'),
                 ),
                 _ShareOption(
                   icon: WanderIcons.more,
-                  label: 'More',
-                  onTap: () => widget.onAction('More options (mock)'),
+                  label: 'Más',
+                  onTap: () => widget.onAction('Más opciones (simulado)'),
                 ),
               ],
             ),
             SizedBox(height: s.xl),
             PrimaryButton(
-              label: 'Copy link',
+              label: 'Copiar enlace',
               icon: WanderIcons.link,
-              onPressed: () => widget.onAction('Link copied'),
+              onPressed: () => widget.onAction('Enlace copiado'),
             ),
           ],
         ),

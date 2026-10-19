@@ -54,14 +54,14 @@ class WanderBottomNav extends StatelessWidget {
                 children: [
                   _NavItem(
                     icon: WanderIcons.boards,
-                    label: 'Boards',
+                    label: 'Mis lugares',
                     active: current == WanderTab.boards,
                     onTap: onBoards,
                   ),
                   _AddButton(onTap: onAdd),
                   _NavItem(
                     icon: WanderIcons.profile,
-                    label: 'Profile',
+                    label: 'Perfil',
                     active: current == WanderTab.profile,
                     onTap: onProfile,
                   ),
@@ -126,7 +126,7 @@ class _AddButton extends StatelessWidget {
 
     return Pressable(
       onTap: onTap,
-      semanticLabel: 'Add a place',
+      semanticLabel: 'Agregar lugar',
       builder: (context, pressed) => AnimatedContainer(
         duration: tokens.motion.fast,
         width: size,

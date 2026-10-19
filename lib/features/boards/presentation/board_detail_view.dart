@@ -50,7 +50,7 @@ class BoardDetailView extends StatelessWidget {
               hasScrollBody: false,
               child: Center(
                 child: Text(
-                  'Nothing pinned here yet',
+                  'Aún no hay lugares en esta colección',
                   style: tokens.handNote.copyWith(
                     color: tokens.colors.inkMuted,
                   ),
@@ -85,7 +85,7 @@ class BoardDetailView extends StatelessWidget {
             ),
             sliver: SliverToBoxAdapter(
               child: GhostButton(
-                label: 'Pin a new place',
+                label: 'Agregar lugar',
                 icon: WanderIcons.add,
                 onPressed: onAddPlace,
               ),
@@ -142,12 +142,12 @@ class _CoverHero extends StatelessWidget {
                       children: [
                         FrostedIconButton(
                           icon: WanderIcons.back,
-                          tooltip: 'Back',
+                          tooltip: 'Volver',
                           onPressed: onBack,
                         ),
                         FrostedIconButton(
                           icon: WanderIcons.share,
-                          tooltip: 'Share board',
+                          tooltip: 'Compartir colección',
                           onPressed: onShare,
                         ),
                       ],

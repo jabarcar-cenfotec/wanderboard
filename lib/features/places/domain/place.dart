@@ -10,6 +10,21 @@ class PlacePhoto {
   final double aspectRatio;
 }
 
+/// Personal state of a place, as named in the Fase 3 userflows.
+enum PlaceStatus {
+  wantToVisit('Quiero visitar'),
+  visited('Ya visité'),
+  wantToReturn('Quiero volver'),
+  wouldNotReturn('No volvería');
+
+  const PlaceStatus(this.label);
+
+  final String label;
+
+  /// Pending places have not been visited yet.
+  bool get isPending => this == wantToVisit;
+}
+
 /// A place in the diary together with its private review.
 @immutable
 class Place {
@@ -21,8 +36,9 @@ class Place {
     required this.boardIds,
     required this.rating,
     required this.note,
-    required this.visitedOn,
     required this.photos,
+    this.visitedOn,
+    this.status = PlaceStatus.visited,
     this.tags = const [],
   });
 
@@ -32,18 +48,24 @@ class Place {
   final String country;
   final List<String> boardIds;
 
-  /// 1–5, shown as rating circles.
+  /// 1–5, shown as rating circles; 0 when there is no rating yet.
   final int rating;
 
   /// Private note; never shared unless the user opts in.
   final String note;
-  final DateTime visitedOn;
+
+  /// Null while the place is pending.
+  final DateTime? visitedOn;
+  final PlaceStatus status;
   final List<PlacePhoto> photos;
   final List<String> tags;
 
-  PlacePhoto get cover => photos.first;
+  /// First photo, or a stable reference image when there are none yet.
+  PlacePhoto get cover =>
+      photos.isNotEmpty ? photos.first : PlacePhoto('wb-$id');
 
-  String get location => '$city, $country';
+  String get location =>
+      [city, country].where((part) => part.trim().isNotEmpty).join(', ');
 
   Place copyWith({
     String? name,
@@ -53,6 +75,7 @@ class Place {
     int? rating,
     String? note,
     DateTime? visitedOn,
+    PlaceStatus? status,
     List<PlacePhoto>? photos,
     List<String>? tags,
   }) {
@@ -65,6 +88,7 @@ class Place {
       rating: rating ?? this.rating,
       note: note ?? this.note,
       visitedOn: visitedOn ?? this.visitedOn,
+      status: status ?? this.status,
       photos: photos ?? this.photos,
       tags: tags ?? this.tags,
     );

@@ -34,13 +34,13 @@ class PlacePolaroidCard extends StatelessWidget {
 
     final card = Pressable(
       onTap: onTap,
-      semanticLabel: 'Open ${place.name}',
+      semanticLabel: 'Abrir ${place.name}',
       builder: (context, pressed) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PolaroidFrame(
             lifted: pressed,
-            caption: formatShortDate(place.visitedOn),
+            caption: polaroidCaption(place),
             photo: Hero(
               tag: placePhotoHeroTag(place.id),
               child: PlaceImage(
@@ -78,4 +78,10 @@ class PlacePolaroidCard extends StatelessWidget {
     if (dropIn) return DropIn(finalAngle: angle, child: card);
     return Transform.rotate(angle: angle, child: card);
   }
+}
+
+/// Visit month for visited places, the status label for pending ones.
+String polaroidCaption(Place place) {
+  final visitedOn = place.visitedOn;
+  return visitedOn == null ? place.status.label : formatShortDate(visitedOn);
 }
