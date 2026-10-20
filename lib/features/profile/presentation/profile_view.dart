@@ -110,7 +110,9 @@ class ProfileView extends StatelessWidget {
                 _SettingTile(
                   icon: WanderIcons.signOut,
                   title: 'Cerrar sesión',
-                  subtitle: profile.email,
+                  subtitle: profile.email.isEmpty
+                      ? profile.name
+                      : profile.email,
                   onTap: onSignOut,
                   showChevron: false,
                 ),

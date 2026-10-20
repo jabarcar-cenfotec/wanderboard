@@ -3,10 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../helpers/pump_app.dart';
 
 void main() {
-  Future<void> signIn(WidgetTester tester) async {
-    await tester.tap(find.text('Empezar mi diario'));
-    await tester.pumpAndSettle();
-  }
+  Future<void> signIn(WidgetTester tester) => enterDiary(tester);
 
   testWidgets('share action opens the share sheet with a link preview', (
     tester,

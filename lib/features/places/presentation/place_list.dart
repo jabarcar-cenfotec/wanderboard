@@ -26,13 +26,15 @@ enum PlaceList {
   };
 }
 
-/// Whether [place] matches a search [query] by name, city or country,
-/// ignoring case and Spanish accents.
+/// Whether [place] matches a search [query] by name, type, address, city
+/// or country, ignoring case and Spanish accents.
 bool placeMatches(Place place, String query) {
   final needle = _fold(query.trim());
   if (needle.isEmpty) return true;
   return [
     place.name,
+    place.type?.label ?? '',
+    place.address,
     place.city,
     place.country,
   ].any((field) => _fold(field).contains(needle));

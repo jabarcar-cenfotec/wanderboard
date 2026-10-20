@@ -18,6 +18,9 @@ class ReviewDraft {
     this.tags = const [],
     this.visitedOn,
     this.status = PlaceStatus.wantToVisit,
+    this.type,
+    this.address = '',
+    this.isSample = false,
   });
 
   factory ReviewDraft.fromPlace(Place place) {
@@ -33,6 +36,9 @@ class ReviewDraft {
       tags: place.tags,
       visitedOn: place.visitedOn,
       status: place.status,
+      type: place.type,
+      address: place.address,
+      isSample: place.isSample,
     );
   }
 
@@ -48,6 +54,9 @@ class ReviewDraft {
   final List<String> tags;
   final DateTime? visitedOn;
   final PlaceStatus status;
+  final PlaceType? type;
+  final String address;
+  final bool isSample;
 
   bool get isEditing => placeId != null;
 
@@ -63,6 +72,10 @@ class ReviewDraft {
     String? note,
     List<String>? boardIds,
     PlaceStatus? status,
+    DateTime? visitedOn,
+    String? address,
+    bool clearType = false,
+    PlaceType? type,
   }) {
     return ReviewDraft(
       placeId: placeId,
@@ -74,8 +87,11 @@ class ReviewDraft {
       note: note ?? this.note,
       boardIds: boardIds ?? this.boardIds,
       tags: tags,
-      visitedOn: visitedOn,
+      visitedOn: visitedOn ?? this.visitedOn,
       status: status ?? this.status,
+      type: clearType ? null : type ?? this.type,
+      address: address ?? this.address,
+      isSample: isSample,
     );
   }
 }
@@ -102,6 +118,9 @@ class SaveReview {
           : draft.visitedOn ?? now ?? DateTime.now(),
       photos: draft.photos,
       tags: draft.tags,
+      type: draft.type,
+      address: draft.address.trim(),
+      isSample: draft.isSample,
     );
     _places.save(place);
     return place;

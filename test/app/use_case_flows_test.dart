@@ -7,10 +7,7 @@ import '../helpers/pump_app.dart';
 
 /// The three use cases validated with users in Fase 5 (Fase 3, section 3.5).
 void main() {
-  Future<void> signIn(WidgetTester tester) async {
-    await tester.tap(find.text('Empezar mi diario'));
-    await tester.pumpAndSettle();
-  }
+  Future<void> signIn(WidgetTester tester) => enterDiary(tester);
 
   Finder editorForm() => find
       .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
@@ -36,6 +33,9 @@ void main() {
       200,
       scrollable: verticalScroll(),
     );
+    // Keep the row clear of the bottom navigation bar.
+    await tester.ensureVisible(find.text(name));
+    await tester.pumpAndSettle();
     await tester.tap(find.text(name));
     await tester.pumpAndSettle();
   }
@@ -53,6 +53,8 @@ void main() {
       -200,
       scrollable: verticalScroll(),
     );
+    await tester.ensureVisible(find.text(list));
+    await tester.pumpAndSettle();
     await tester.tap(find.text(list));
     await tester.pumpAndSettle();
   }
@@ -124,12 +126,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(chipSelected(tester, 'Ya visité'), isTrue);
 
+    final note = find.widgetWithText(
+      TextField,
+      'Me la recomendaron en el trabajo. '
+      'Ir temprano y con zapatos para barro.',
+    );
+    await tester.scrollUntilVisible(note, 200, scrollable: editorForm());
     await tester.enterText(
-      find.widgetWithText(
-        TextField,
-        'Me la recomendaron en el trabajo. '
-        'Ir temprano y con zapatos para barro.',
-      ),
+      note,
       'La catarata impresiona; el sendero de bajada es exigente.',
     );
     await tapInForm(tester, find.text('Guardar cambios'));
@@ -169,7 +173,14 @@ void main() {
     await tester.pumpAndSettle();
     await openPlace(tester, 'Canales de Tortuguero');
     expect(find.text('Quiero volver'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.textContaining('Bote en silencio al amanecer'),
+      200,
+      scrollable: detailScroll(),
+    );
     expect(find.textContaining('Bote en silencio al amanecer'), findsOneWidget);
+    await tester.drag(detailScroll(), const Offset(0, 2000));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip('Volver'));
     await tester.pumpAndSettle();

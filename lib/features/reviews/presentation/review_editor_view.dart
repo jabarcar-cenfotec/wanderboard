@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/wander_tokens.dart';
 import '../../../shared/icons/wander_icons.dart';
-import '../../../shared/widgets/atoms/rating_circles.dart';
+import '../../../core/utils/date_format.dart';
+import '../../../shared/widgets/atoms/star_rating.dart';
 import '../../../shared/widgets/atoms/tag_chip.dart';
 import '../../../shared/widgets/atoms/wander_buttons.dart';
 import '../../boards/domain/board.dart';
@@ -22,12 +23,15 @@ class ReviewEditorView extends StatelessWidget {
     required this.nameController,
     required this.cityController,
     required this.countryController,
+    required this.addressController,
     required this.noteController,
     required this.onTextChanged,
     required this.onTogglePhoto,
     required this.onOpenCamera,
     required this.onRatingChanged,
     required this.onStatusChanged,
+    required this.onTypeChanged,
+    required this.onPickVisitDate,
     required this.onToggleBoard,
     required this.onClose,
     required this.onSave,
@@ -42,12 +46,17 @@ class ReviewEditorView extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController cityController;
   final TextEditingController countryController;
+  final TextEditingController addressController;
   final TextEditingController noteController;
   final VoidCallback onTextChanged;
   final ValueChanged<PlacePhoto> onTogglePhoto;
   final VoidCallback onOpenCamera;
   final ValueChanged<int> onRatingChanged;
   final ValueChanged<PlaceStatus> onStatusChanged;
+
+  /// Selects a type, or clears it when tapped again.
+  final ValueChanged<PlaceType> onTypeChanged;
+  final VoidCallback onPickVisitDate;
   final ValueChanged<String> onToggleBoard;
   final VoidCallback onClose;
   final VoidCallback? onSave;
@@ -82,12 +91,7 @@ class ReviewEditorView extends StatelessWidget {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: ListView(
-          padding: EdgeInsets.fromLTRB(
-            s.screen,
-            0,
-            s.screen,
-            s.xxl + MediaQuery.paddingOf(context).bottom,
-          ),
+          padding: EdgeInsets.fromLTRB(s.screen, 0, s.screen, s.xl),
           children: [
             section('El lugar'),
             TextField(
@@ -121,6 +125,29 @@ class ReviewEditorView extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(height: s.md),
+            TextField(
+              controller: addressController,
+              onChanged: (_) => onTextChanged(),
+              textCapitalization: TextCapitalization.sentences,
+              style: tokens.text.body,
+              decoration: const InputDecoration(
+                hintText: 'Dirección (opcional)',
+              ),
+            ),
+            section('Tipo de lugar', hint: 'Opcional'),
+            Wrap(
+              spacing: s.sm,
+              runSpacing: s.sm,
+              children: [
+                for (final type in PlaceType.values)
+                  TagChip(
+                    label: type.label,
+                    selected: draft.type == type,
+                    onTap: () => onTypeChanged(type),
+                  ),
+              ],
+            ),
             section('Estado'),
             Wrap(
               spacing: s.sm,
@@ -135,8 +162,24 @@ class ReviewEditorView extends StatelessWidget {
               ],
             ),
             if (!draft.status.isPending) ...[
+              section('Fecha de visita'),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      formatVisitDate(draft.visitedOn ?? DateTime.now()),
+                      style: tokens.text.body,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: onPickVisitDate,
+                    icon: const Icon(WanderIcons.calendar),
+                    label: const Text('Cambiar fecha'),
+                  ),
+                ],
+              ),
               section('Valoración', hint: 'Opcional'),
-              RatingCircles(rating: draft.rating, onChanged: onRatingChanged),
+              StarRating(rating: draft.rating, onChanged: onRatingChanged),
             ],
             section('Nota privada', hint: 'Solo tú puedes leerla'),
             TextField(
@@ -173,21 +216,31 @@ class ReviewEditorView extends StatelessWidget {
                   ),
               ],
             ),
-            SizedBox(height: s.xxl),
-            PrimaryButton(
-              label: isEditing ? 'Guardar cambios' : 'Guardar',
-              icon: WanderIcons.check,
-              onPressed: draft.canSave ? onSave : null,
-            ),
-            if (!draft.canSave) ...[
-              SizedBox(height: s.sm),
-              Text(
-                'Agrega el nombre del lugar para guardar.',
-                textAlign: TextAlign.center,
-                style: tokens.text.caption.copyWith(color: c.inkMuted),
+          ],
+        ),
+      ),
+      // H3: the save button stays visible while the form scrolls.
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(s.screen, s.sm, s.screen, s.md),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!draft.canSave) ...[
+                Text(
+                  'Agrega el nombre del lugar para guardar.',
+                  textAlign: TextAlign.center,
+                  style: tokens.text.caption.copyWith(color: c.inkMuted),
+                ),
+                SizedBox(height: s.sm),
+              ],
+              PrimaryButton(
+                label: isEditing ? 'Guardar cambios' : 'Guardar',
+                icon: WanderIcons.check,
+                onPressed: draft.canSave ? onSave : null,
               ),
             ],
-          ],
+          ),
         ),
       ),
     );

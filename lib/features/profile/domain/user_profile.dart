@@ -19,6 +19,10 @@ class UserProfile {
   final String avatarSeed;
 
   String get firstName => name.split(' ').first;
+
+  /// Same profile under the name typed at onboarding, without the demo email.
+  UserProfile named(String name) =>
+      UserProfile(name: name, email: '', motto: motto, avatarSeed: avatarSeed);
 }
 
 /// Personal totals only — no public counts (DESIGN.md §1).

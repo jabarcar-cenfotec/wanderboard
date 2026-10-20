@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/app_scope.dart';
 import '../../../core/navigation/routes.dart';
+import '../domain/place_links.dart';
 import 'place_detail_view.dart';
 
 /// Container for a place and its private review.
@@ -35,6 +37,8 @@ class PlaceDetailScreen extends StatelessWidget {
               context.canPop() ? context.pop() : context.go(Routes.home),
           onEdit: () => context.push(Routes.editPlace(place.id)),
           onRegisterVisit: () => context.push(Routes.registerVisit(place.id)),
+          onOpenGoogleMaps: () => launchUrl(googleMapsUrl(place)),
+          onOpenWaze: () => launchUrl(wazeUrl(place)),
         );
       },
     );

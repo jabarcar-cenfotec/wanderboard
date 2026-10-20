@@ -28,6 +28,20 @@ enum PlaceStatus {
   bool get isPending => this == wantToVisit;
 }
 
+/// Kind of place, used to filter and search (Fase 6, H2).
+enum PlaceType {
+  restaurant('Restaurante'),
+  cafe('Café'),
+  nature('Naturaleza'),
+  viewpoint('Mirador'),
+  culture('Cultura'),
+  other('Otro');
+
+  const PlaceType(this.label);
+
+  final String label;
+}
+
 /// A place in the diary together with its private review.
 @immutable
 class Place {
@@ -43,6 +57,9 @@ class Place {
     this.visitedOn,
     this.status = PlaceStatus.visited,
     this.tags = const [],
+    this.type,
+    this.address = '',
+    this.isSample = false,
   });
 
   final String id;
@@ -63,11 +80,24 @@ class Place {
   final List<PlacePhoto> photos;
   final List<String> tags;
 
+  /// Null when the user did not choose one.
+  final PlaceType? type;
+
+  /// Free-text address, used to open the place in a maps app.
+  final String address;
+
+  /// Preloaded example entry, labeled as such in the lists.
+  final bool isSample;
+
   /// First photo, or [PlacePhoto.none] when there are no photos yet.
   PlacePhoto get cover => photos.isNotEmpty ? photos.first : PlacePhoto.none;
 
   String get location =>
       [city, country].where((part) => part.trim().isNotEmpty).join(', ');
+
+  /// Type and location, e.g. "Restaurante · Heredia, Costa Rica".
+  String get subtitle =>
+      [?type?.label, location].where((part) => part.isNotEmpty).join(' · ');
 
   Place copyWith({
     String? name,
@@ -80,6 +110,9 @@ class Place {
     PlaceStatus? status,
     List<PlacePhoto>? photos,
     List<String>? tags,
+    PlaceType? type,
+    String? address,
+    bool? isSample,
   }) {
     return Place(
       id: id,
@@ -93,6 +126,9 @@ class Place {
       status: status ?? this.status,
       photos: photos ?? this.photos,
       tags: tags ?? this.tags,
+      type: type ?? this.type,
+      address: address ?? this.address,
+      isSample: isSample ?? this.isSample,
     );
   }
 }

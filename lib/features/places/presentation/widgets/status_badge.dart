@@ -49,3 +49,29 @@ class StatusBadge extends StatelessWidget {
     );
   }
 }
+
+/// Marks a preloaded example place (Fase 6, H1).
+class SampleLabel extends StatelessWidget {
+  const SampleLabel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.wander;
+    final c = tokens.colors;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: tokens.spacing.sm,
+        vertical: tokens.spacing.xs,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(color: c.line),
+        borderRadius: BorderRadius.circular(tokens.radii.lg),
+      ),
+      child: Text(
+        'Ejemplo',
+        style: tokens.text.caption.copyWith(color: c.inkMuted),
+      ),
+    );
+  }
+}

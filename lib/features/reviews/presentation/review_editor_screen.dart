@@ -39,6 +39,7 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
   final _name = TextEditingController();
   final _city = TextEditingController();
   final _country = TextEditingController();
+  final _address = TextEditingController();
   final _note = TextEditingController();
   bool _initialized = false;
   bool _saving = false;
@@ -61,6 +62,7 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
     _name.text = _draft.name;
     _city.text = _draft.city;
     _country.text = _draft.country;
+    _address.text = _draft.address;
     _note.text = _draft.note;
   }
 
@@ -69,6 +71,7 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
     _name.dispose();
     _city.dispose();
     _country.dispose();
+    _address.dispose();
     _note.dispose();
     super.dispose();
   }
@@ -81,6 +84,7 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
         name: _name.text,
         city: _city.text,
         country: _country.text,
+        address: _address.text,
         note: _note.text,
       ),
     );
@@ -103,6 +107,26 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
     _update(_draft.copyWith(boardIds: ids));
   }
 
+  void _toggleType(PlaceType type) => _update(
+    type == _draft.type
+        ? _draft.copyWith(clearType: true)
+        : _draft.copyWith(type: type),
+  );
+
+  Future<void> _pickVisitDate() async {
+    final today = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _draft.visitedOn ?? today,
+      firstDate: DateTime(today.year - 20),
+      lastDate: today,
+      helpText: 'Fecha de visita',
+      cancelText: 'Cancelar',
+      confirmText: 'Aceptar',
+    );
+    if (picked != null) _update(_draft.copyWith(visitedOn: picked));
+  }
+
   void _showMock(String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -115,7 +139,9 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
     setState(() => _saving = true);
 
     final places = AppScope.of(context).places;
+    final messenger = ScaffoldMessenger.of(context);
     final place = SaveReview(places)(_draft);
+    final list = PlaceList.of(place.status);
     // Edits return to the detail view; only new pins drop into a board grid.
     if (_draft.isEditing) places.takeJustSavedId();
     await showSavedDropIn(context, place);
@@ -125,8 +151,20 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
       context.pop();
     } else {
       // CU-01: the new place shows up in its list of "Mis lugares".
-      context.go(Routes.myPlaces(PlaceList.of(place.status).slug));
+      context.go(Routes.myPlaces(list.slug));
     }
+    // H12: a lasting confirmation after the drop-in closes.
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            _draft.isEditing
+                ? 'Cambios guardados'
+                : '«${place.name}» se guardó en ${list.label}',
+          ),
+        ),
+      );
   }
 
   @override
@@ -155,6 +193,7 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
       nameController: _name,
       cityController: _city,
       countryController: _country,
+      addressController: _address,
       noteController: _note,
       onTextChanged: _syncText,
       onTogglePhoto: _togglePhoto,
@@ -162,6 +201,8 @@ class _ReviewEditorScreenState extends State<ReviewEditorScreen> {
           _showMock('La cámara no está disponible en este prototipo'),
       onRatingChanged: (rating) => _update(_draft.copyWith(rating: rating)),
       onStatusChanged: (status) => _update(_draft.copyWith(status: status)),
+      onTypeChanged: _toggleType,
+      onPickVisitDate: _pickVisitDate,
       onToggleBoard: _toggleBoard,
       onClose: () => context.canPop() ? context.pop() : context.go(Routes.home),
       onSave: _saving ? null : _save,

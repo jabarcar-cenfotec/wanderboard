@@ -18,10 +18,12 @@ class HomeView extends StatelessWidget {
     required this.placeCount,
     required this.list,
     required this.query,
+    required this.type,
     required this.places,
     required this.boards,
     required this.onSelectList,
     required this.onQueryChanged,
+    required this.onTypeChanged,
     required this.onOpenPlace,
     required this.onOpenBoard,
   });
@@ -33,11 +35,15 @@ class HomeView extends StatelessWidget {
   /// Search text; when not empty, [places] holds the search results.
   final String query;
 
+  /// Type filter of the pending and history lists; null shows every type.
+  final PlaceType? type;
+
   /// Places of [list] or the search results; ignored for collections.
   final List<Place> places;
   final List<BoardSummary> boards;
   final ValueChanged<PlaceList> onSelectList;
   final ValueChanged<String> onQueryChanged;
+  final ValueChanged<PlaceType?> onTypeChanged;
   final ValueChanged<String> onOpenPlace;
   final ValueChanged<String> onOpenBoard;
 
@@ -129,6 +135,25 @@ class HomeView extends StatelessWidget {
                           ),
                       ],
                     ),
+                    if (list != PlaceList.collections) ...[
+                      SizedBox(height: s.md),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (final option in [null, ...PlaceType.values])
+                              Padding(
+                                padding: EdgeInsets.only(right: s.sm),
+                                child: TagChip(
+                                  label: option?.label ?? 'Todos',
+                                  selected: option == type,
+                                  onTap: () => onTypeChanged(option),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

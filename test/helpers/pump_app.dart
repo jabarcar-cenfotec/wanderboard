@@ -19,6 +19,14 @@ Future<void> pumpWanderApp(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// Types [name] on the onboarding screen and starts the diary.
+Future<void> enterDiary(WidgetTester tester, {String name = 'Ana'}) async {
+  await tester.enterText(find.widgetWithText(TextField, 'Tu nombre'), name);
+  await tester.pump();
+  await tester.tap(find.text('Empezar mi diario'));
+  await tester.pumpAndSettle();
+}
+
 /// Wraps a single widget with the Wanderboard theme.
 Widget themed(Widget child) {
   return MaterialApp(

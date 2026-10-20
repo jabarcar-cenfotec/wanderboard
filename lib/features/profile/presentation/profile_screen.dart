@@ -23,7 +23,7 @@ class ProfileScreen extends StatelessWidget {
     return ListenableBuilder(
       listenable: scope.places,
       builder: (context, _) => ProfileView(
-        profile: scope.profile,
+        profile: scope.profile.named(scope.auth.name),
         stats: DiaryStats.from(
           places: scope.places.all(),
           boardCount: scope.boards.all().length,

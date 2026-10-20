@@ -10,16 +10,10 @@ import 'place_polaroid_card.dart';
 /// Swipeable photo gallery. The first photo is the [Hero] destination
 /// from the grid. No tilt here (detail view).
 class PhotoGallery extends StatefulWidget {
-  const PhotoGallery({
-    super.key,
-    required this.place,
-    required this.onBack,
-    required this.onEdit,
-  });
+  const PhotoGallery({super.key, required this.place, required this.onBack});
 
   final Place place;
   final VoidCallback onBack;
-  final VoidCallback onEdit;
 
   @override
   State<PhotoGallery> createState() => _PhotoGalleryState();
@@ -72,18 +66,12 @@ class _PhotoGalleryState extends State<PhotoGallery> {
               child: Padding(
                 padding: EdgeInsets.all(s.screen),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FrostedIconButton(
                       icon: WanderIcons.back,
                       tooltip: 'Volver',
                       onPressed: widget.onBack,
-                    ),
-                    FrostedIconButton(
-                      icon: WanderIcons.edit,
-                      tooltip: 'Editar registro',
-                      onPressed: widget.onEdit,
                     ),
                   ],
                 ),

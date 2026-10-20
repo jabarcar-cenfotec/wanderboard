@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/wander_tokens.dart';
 import '../../../core/utils/date_format.dart';
 import '../../../shared/icons/wander_icons.dart';
-import '../../../shared/widgets/atoms/rating_circles.dart';
+import '../../../shared/widgets/atoms/star_rating.dart';
 import '../../../shared/widgets/atoms/tag_chip.dart';
 import '../../../shared/widgets/atoms/wander_buttons.dart';
 import '../domain/place.dart';
@@ -19,6 +19,8 @@ class PlaceDetailView extends StatelessWidget {
     required this.onBack,
     required this.onEdit,
     required this.onRegisterVisit,
+    required this.onOpenGoogleMaps,
+    required this.onOpenWaze,
   });
 
   final Place place;
@@ -28,6 +30,8 @@ class PlaceDetailView extends StatelessWidget {
 
   /// Opens the editor with the status set to "Ya visité" (CU-02).
   final VoidCallback onRegisterVisit;
+  final VoidCallback onOpenGoogleMaps;
+  final VoidCallback onOpenWaze;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +43,7 @@ class PlaceDetailView extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
-            child: PhotoGallery(place: place, onBack: onBack, onEdit: onEdit),
+            child: PhotoGallery(place: place, onBack: onBack),
           ),
           SliverPadding(
             padding: EdgeInsets.fromLTRB(
@@ -58,16 +62,20 @@ class PlaceDetailView extends StatelessWidget {
                     SizedBox(width: s.xs),
                     Expanded(
                       child: Text(
-                        place.location,
+                        place.subtitle,
                         style: tokens.text.caption.copyWith(color: c.inkMuted),
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: s.md),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: StatusBadge(status: place.status),
+                Wrap(
+                  spacing: s.sm,
+                  runSpacing: s.xs,
+                  children: [
+                    StatusBadge(status: place.status),
+                    if (place.isSample) const SampleLabel(),
+                  ],
                 ),
                 if (place.visitedOn case final visitedOn?) ...[
                   SizedBox(height: s.sm),
@@ -76,9 +84,29 @@ class PlaceDetailView extends StatelessWidget {
                     style: tokens.handNote.copyWith(color: c.slate),
                   ),
                 ],
+                // H8, H9: the main action sits on top, without scrolling.
+                SizedBox(height: s.lg),
+                if (place.status.isPending) ...[
+                  PrimaryButton(
+                    label: 'Registrar visita',
+                    icon: WanderIcons.check,
+                    onPressed: onRegisterVisit,
+                  ),
+                  SizedBox(height: s.sm),
+                  SecondaryButton(
+                    label: 'Editar registro',
+                    icon: WanderIcons.edit,
+                    onPressed: onEdit,
+                  ),
+                ] else
+                  SecondaryButton(
+                    label: 'Editar registro',
+                    icon: WanderIcons.edit,
+                    onPressed: onEdit,
+                  ),
                 if (place.rating > 0) ...[
                   SizedBox(height: s.lg),
-                  RatingCircles(rating: place.rating),
+                  StarRating(rating: place.rating),
                 ],
                 SizedBox(height: s.xl),
                 _PrivateNote(note: place.note),
@@ -101,25 +129,26 @@ class PlaceDetailView extends StatelessWidget {
                 ],
                 SizedBox(height: s.xl),
                 MapPlaceholder(label: place.city),
-                SizedBox(height: s.xl),
-                if (place.status.isPending) ...[
-                  PrimaryButton(
-                    label: 'Registrar visita',
-                    icon: WanderIcons.check,
-                    onPressed: onRegisterVisit,
+                if (place.address.isNotEmpty) ...[
+                  SizedBox(height: s.sm),
+                  Text(
+                    place.address,
+                    style: tokens.text.caption.copyWith(color: c.inkMuted),
                   ),
-                  SizedBox(height: s.md),
-                  SecondaryButton(
-                    label: 'Editar registro',
-                    icon: WanderIcons.edit,
-                    onPressed: onEdit,
-                  ),
-                ] else
-                  PrimaryButton(
-                    label: 'Editar registro',
-                    icon: WanderIcons.edit,
-                    onPressed: onEdit,
-                  ),
+                ],
+                // H5: open the place in a real maps app.
+                SizedBox(height: s.md),
+                SecondaryButton(
+                  label: 'Abrir en Google Maps',
+                  icon: WanderIcons.pin,
+                  onPressed: onOpenGoogleMaps,
+                ),
+                SizedBox(height: s.sm),
+                SecondaryButton(
+                  label: 'Abrir en Waze',
+                  icon: WanderIcons.pin,
+                  onPressed: onOpenWaze,
+                ),
               ],
             ),
           ),

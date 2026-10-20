@@ -47,9 +47,9 @@ class PlaceRowCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(place.name, style: tokens.text.bodyStrong),
-                  if (place.location.isNotEmpty)
+                  if (place.subtitle.isNotEmpty)
                     Text(
-                      place.location,
+                      place.subtitle,
                       style: tokens.text.caption.copyWith(color: c.inkMuted),
                     ),
                   SizedBox(height: s.sm),
@@ -59,6 +59,7 @@ class PlaceRowCard extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       StatusBadge(status: place.status),
+                      if (place.isSample) const SampleLabel(),
                       if (place.visitedOn != null)
                         Text(
                           polaroidCaption(place),

@@ -1,8 +1,42 @@
 import '../../boards/data/seed_boards.dart';
 import '../domain/place.dart';
 
-/// Mock diary entries — pending places plus visits in Costa Rica and abroad.
+/// Example diary entries, labeled as samples so new users can tell them
+/// apart from their own places.
 final List<Place> seedPlaces = [
+  for (final place in _entries)
+    place.copyWith(
+      isSample: true,
+      type: _types[place.id],
+      address: _addresses[place.id],
+    ),
+];
+
+const _types = {
+  'catarata-del-toro': PlaceType.nature,
+  'volcan-irazu': PlaceType.viewpoint,
+  'mercado-central': PlaceType.restaurant,
+  'arenal-bridges': PlaceType.nature,
+  'monteverde': PlaceType.nature,
+  'playa-espadilla': PlaceType.nature,
+  'tortuguero': PlaceType.nature,
+  'barrio-escalante': PlaceType.cafe,
+  'miradouro-graca': PlaceType.viewpoint,
+  'roma-norte': PlaceType.cafe,
+  'degraves-street': PlaceType.cafe,
+  'arthurs-seat': PlaceType.nature,
+  'philosophers-path': PlaceType.culture,
+  'arashiyama': PlaceType.nature,
+  'fushimi-inari': PlaceType.culture,
+};
+
+const _addresses = {
+  'mercado-central': 'Avenida Central, entre calles 6 y 8',
+  'volcan-irazu': 'Parque Nacional Volcán Irazú',
+};
+
+/// Mock diary entries — pending places plus visits in Costa Rica and abroad.
+final List<Place> _entries = [
   Place(
     id: 'catarata-del-toro',
     name: 'Catarata del Toro',

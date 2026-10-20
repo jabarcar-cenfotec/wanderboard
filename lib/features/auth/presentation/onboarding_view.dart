@@ -9,13 +9,19 @@ class OnboardingView extends StatelessWidget {
   const OnboardingView({
     super.key,
     required this.photoSeeds,
+    required this.nameController,
+    required this.onNameChanged,
     required this.onStart,
     required this.onSignIn,
   });
 
   final List<String> photoSeeds;
-  final VoidCallback onStart;
-  final VoidCallback onSignIn;
+  final TextEditingController nameController;
+  final ValueChanged<String> onNameChanged;
+
+  /// Null until a name is typed.
+  final VoidCallback? onStart;
+  final VoidCallback? onSignIn;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +55,15 @@ class OnboardingView extends StatelessWidget {
                         color: tokens.colors.inkMuted,
                       ),
                     ),
-                    SizedBox(height: s.xxl),
+                    SizedBox(height: s.xl),
+                    TextField(
+                      controller: nameController,
+                      onChanged: onNameChanged,
+                      textCapitalization: TextCapitalization.words,
+                      style: tokens.text.body,
+                      decoration: const InputDecoration(hintText: 'Tu nombre'),
+                    ),
+                    SizedBox(height: s.lg),
                     PrimaryButton(
                       label: 'Empezar mi diario',
                       onPressed: onStart,

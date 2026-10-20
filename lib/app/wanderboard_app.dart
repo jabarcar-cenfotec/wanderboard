@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/theme/app_theme.dart';
@@ -47,6 +48,9 @@ class _WanderboardAppState extends State<WanderboardApp> {
         title: 'Wanderboard',
         debugShowCheckedModeBanner: false,
         theme: _theme,
+        locale: const Locale('es'),
+        supportedLocales: const [Locale('es')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         routerConfig: _router,
         builder: (context, child) => DeviceFrame(child: child!),
       ),
