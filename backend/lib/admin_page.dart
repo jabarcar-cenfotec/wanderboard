@@ -10,6 +10,9 @@ const adminPage = r'''<!DOCTYPE html>
   header { background: #2f3e4e; color: #fff; padding: 16px 24px; }
   header h1 { margin: 0; font-size: 20px; }
   header p { margin: 4px 0 0; opacity: .8; font-size: 14px; }
+  header nav { margin-top: 8px; }
+  header nav a { color: #fff; opacity: .75; margin-right: 16px; text-decoration: none; }
+  header nav a.active { opacity: 1; border-bottom: 2px solid #fff; }
   main { padding: 16px 24px; max-width: 1200px; }
   .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
   .stat { background: #fff; border-radius: 8px; padding: 12px 16px; min-width: 140px; box-shadow: 0 1px 3px #0002; }
@@ -32,6 +35,7 @@ const adminPage = r'''<!DOCTYPE html>
 <header>
   <h1>Backend E2EE · Panel de administración</h1>
   <p>Datos tal como los almacena el servidor. El servidor no tiene ninguna clave para descifrarlos.</p>
+  <nav><a href="/admin" class="active">Panel de datos</a><a href="/admin/flujo">Flujo del proceso</a></nav>
 </header>
 <main>
   <div class="actions">

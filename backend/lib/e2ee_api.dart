@@ -4,6 +4,7 @@ import 'package:shelf/shelf.dart';
 
 import 'admin_page.dart';
 import 'e2ee_store.dart';
+import 'flow_page.dart';
 
 const _corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,7 +18,8 @@ const _corsHeaders = {
 ///   PUT     /records/{owner}/{record}    GET /records/{owner}
 ///   PUT/GET /collections/{id}            GET /collections/{id}/grants/{account}
 ///   PUT/GET /recovery/{account}
-///   GET     /admin, /admin/data, /admin/search?q=   POST /admin/reset
+///   GET     /admin, /admin/flujo, /admin/data, /admin/search?q=
+///   POST    /admin/reset
 Handler e2eeApi(E2eeStore store, {String storageLabel = 'memoria'}) {
   return (Request request) async {
     if (request.method == 'OPTIONS') {
@@ -32,6 +34,11 @@ Handler e2eeApi(E2eeStore store, {String storageLabel = 'memoria'}) {
       case ('GET', [] || ['admin']):
         return Response.ok(
           adminPage,
+          headers: {'Content-Type': 'text/html; charset=utf-8'},
+        );
+      case ('GET', ['admin', 'flujo']):
+        return Response.ok(
+          flowPage,
           headers: {'Content-Type': 'text/html; charset=utf-8'},
         );
       case ('GET', ['admin', 'data']):

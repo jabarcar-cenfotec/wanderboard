@@ -102,6 +102,18 @@ void main() {
     expect(response.body, contains('"matches":0'));
   });
 
+  test('the flow page and the admin panel link to each other', () async {
+    final base = 'http://localhost:${server.port}';
+    final flow = await http.get(Uri.parse('$base/admin/flujo'));
+    final admin = await http.get(Uri.parse('$base/admin'));
+
+    expect(flow.statusCode, 200);
+    expect(flow.headers['content-type'], contains('text/html'));
+    expect(flow.body, contains('Flujo del proceso'));
+    expect(flow.body, contains('href="/admin"'));
+    expect(admin.body, contains('href="/admin/flujo"'));
+  });
+
   test('a stopped server surfaces as BackendUnavailable', () async {
     await server.close(force: true);
     final owner = E2eeDevice(accountId: 'me', server: backend, cipher: cipher);

@@ -15,6 +15,7 @@ flutter run -d edge               # or: flutter build web, then serve build/web
 ```
 
 - Admin panel: http://localhost:8080/admin (tables, raw JSON, clear-text search, reset)
+- Flow diagrams for the presentation: http://localhost:8080/admin/flujo (step by step with the arrow keys)
 - Data file: `backend/data.json`
 - Other server URL: `flutter run --dart-define=E2EE_SERVER=http://host:port/`
 
