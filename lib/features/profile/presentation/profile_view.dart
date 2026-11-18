@@ -12,12 +12,14 @@ class ProfileView extends StatelessWidget {
     required this.profile,
     required this.stats,
     required this.onSettingTap,
+    required this.onPrivacyTap,
     required this.onSignOut,
   });
 
   final UserProfile profile;
   final DiaryStats stats;
   final ValueChanged<String> onSettingTap;
+  final VoidCallback onPrivacyTap;
   final VoidCallback onSignOut;
 
   @override
@@ -80,9 +82,9 @@ class ProfileView extends StatelessWidget {
               children: [
                 _SettingTile(
                   icon: WanderIcons.lock,
-                  title: 'Privacidad',
-                  subtitle: 'Tus colecciones son privadas por defecto',
-                  onTap: () => onSettingTap('Privacidad'),
+                  title: 'Privacidad y cifrado',
+                  subtitle: 'Tu diario se cifra en este dispositivo',
+                  onTap: onPrivacyTap,
                 ),
                 _SettingTile(
                   icon: WanderIcons.bell,

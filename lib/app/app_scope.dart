@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import '../features/auth/data/fake_auth_service.dart';
 import '../features/boards/domain/board.dart';
 import '../features/places/domain/place_repository.dart';
+import '../features/privacy/application/e2ee_environment.dart';
 import '../features/profile/domain/user_profile.dart';
 
 /// Composition root handed down the tree. Containers read from here;
@@ -14,6 +15,7 @@ class AppScope extends InheritedWidget {
     required this.places,
     required this.auth,
     required this.profile,
+    required this.e2ee,
     required super.child,
   });
 
@@ -21,6 +23,9 @@ class AppScope extends InheritedWidget {
   final PlaceRepository places;
   final FakeAuthService auth;
   final UserProfile profile;
+
+  /// End-to-end encryption proof of concept (research project).
+  final E2eeEnvironment e2ee;
 
   static AppScope of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AppScope>();
@@ -33,5 +38,6 @@ class AppScope extends InheritedWidget {
       boards != oldWidget.boards ||
       places != oldWidget.places ||
       auth != oldWidget.auth ||
-      profile != oldWidget.profile;
+      profile != oldWidget.profile ||
+      e2ee != oldWidget.e2ee;
 }

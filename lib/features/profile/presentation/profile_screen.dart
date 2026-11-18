@@ -30,6 +30,7 @@ class ProfileScreen extends StatelessWidget {
         ),
         onSettingTap: (setting) =>
             mock('$setting no forma parte de este prototipo'),
+        onPrivacyTap: () => context.push(Routes.privacy),
         onSignOut: () {
           scope.auth.signOut();
           context.go(Routes.onboarding);
