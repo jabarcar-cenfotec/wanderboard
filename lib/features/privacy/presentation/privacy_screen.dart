@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/app_scope.dart';
 import '../../../core/navigation/routes.dart';
@@ -78,6 +79,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
       builder: (context, _) => PrivacyView(
         data: PrivacyViewData(
           syncedCount: e2ee.syncedCount,
+          syncError: e2ee.syncError,
+          adminUrl: e2ee.adminUrl?.toString(),
           boards: boards,
           selectedBoardId: boardId,
           includeNotes: _includeNotes,
@@ -91,7 +94,11 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         ),
         onBack: () =>
             context.canPop() ? context.pop() : context.go(Routes.profile),
-        onOpenServer: () => context.push(Routes.privacyServer),
+        onOpenServer: () {
+          final url = e2ee.adminUrl;
+          if (url != null) launchUrl(url, webOnlyWindowName: '_blank');
+        },
+        onRetrySync: e2ee.retrySync,
         onSelectBoard: (id) => setState(() => _boardId = id),
         onIncludeNotes: (value) => setState(() => _includeNotes = value),
         onShare: () => _run(() async {

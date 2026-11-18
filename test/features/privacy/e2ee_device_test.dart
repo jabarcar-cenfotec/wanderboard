@@ -5,31 +5,31 @@ import 'package:wanderboard/features/places/data/seed_places.dart';
 import 'package:wanderboard/features/places/domain/place.dart';
 import 'package:wanderboard/features/privacy/application/e2ee_device.dart';
 import 'package:wanderboard/features/privacy/data/e2ee_cipher.dart';
-import 'package:wanderboard/features/privacy/data/simulated_server.dart';
+import 'package:wanderboard/features/privacy/data/in_memory_e2ee_backend.dart';
 import 'package:wanderboard/features/privacy/domain/e2ee_errors.dart';
 
 /// Technical tests T-01..T-08 from the research document (section 3.6).
 void main() {
   // Low PBKDF2 cost keeps the suite fast; the app uses the production value.
   final cipher = E2eeCipher(recoveryIterations: 1000);
-  late SimulatedServer server;
+  late InMemoryE2eeBackend server;
   late E2eeDevice owner;
 
   const secretNote = 'Pedir el queque de zanahoria, mesa junto a la ventana';
   final place = seedPlaces.first.copyWith(note: secretNote);
 
   setUp(() async {
-    server = SimulatedServer();
+    server = InMemoryE2eeBackend();
     owner = E2eeDevice(accountId: 'owner', server: server, cipher: cipher);
     await owner.ready;
   });
 
-  String serverDump() => jsonEncode(server.snapshot());
+  String serverDump() => server.dump();
 
   test('T-01 the server only stores ciphertext, nonce and metadata', () async {
     await owner.uploadPlace(place);
 
-    final stored = server.recordsOf('owner').single.toJson();
+    final stored = (await server.recordsOf('owner')).single.toJson();
     expect(
       stored.keys,
       containsAll(['id', 'keyId', 'cryptoVersion', 'nonce', 'cipherText']),
@@ -99,13 +99,16 @@ void main() {
       );
     });
 
-    test('T-05 a stolen wrapped key is useless without the private key', () {
-      final stolen = server.wrappedKeyFor(collectionId, 'guest')!;
-      expect(
-        intruder.openWithWrappedKey(collectionId, stolen),
-        throwsA(isA<E2eeIntegrityError>()),
-      );
-    });
+    test(
+      'T-05 a stolen wrapped key is useless without the private key',
+      () async {
+        final stolen = (await server.wrappedKeyFor(collectionId, 'guest'))!;
+        expect(
+          intruder.openWithWrappedKey(collectionId, stolen),
+          throwsA(isA<E2eeIntegrityError>()),
+        );
+      },
+    );
 
     test('T-06 the recipient decrypts; private notes stay out', () async {
       final shared = await guest.openCollection(collectionId);
@@ -131,11 +134,11 @@ void main() {
     });
 
     test('revoking rotates the key and blocks future access', () async {
-      final keyBefore = server.collection(collectionId)!.keyId;
+      final keyBefore = (await server.collection(collectionId))!.keyId;
 
       await owner.revokeAccess(collectionId, 'guest');
 
-      expect(server.collection(collectionId)!.keyId, isNot(keyBefore));
+      expect((await server.collection(collectionId))!.keyId, isNot(keyBefore));
       expect(
         guest.openCollection(collectionId),
         throwsA(isA<E2eeAccessDenied>()),

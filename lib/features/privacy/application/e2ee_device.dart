@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../../places/domain/place.dart';
 import '../data/e2ee_cipher.dart';
 import '../data/place_codec.dart';
-import '../data/simulated_server.dart';
+import '../domain/e2ee_backend.dart';
 import '../domain/e2ee_errors.dart';
 import '../domain/encrypted_models.dart';
 
@@ -18,7 +18,7 @@ import '../domain/encrypted_models.dart';
 class E2eeDevice {
   E2eeDevice({
     required String accountId,
-    required SimulatedServer server,
+    required E2eeBackend server,
     required E2eeCipher cipher,
   }) : this._(
          accountId,
@@ -36,18 +36,16 @@ class E2eeDevice {
     required this._seed,
     required this._dataKey,
     required this._dataKeyId,
-  }) {
-    ready = _init();
-  }
+  });
 
   /// Restores the keys of [accountId] on a new device from its phrase.
   static Future<E2eeDevice> restore({
     required String accountId,
     required String phrase,
-    required SimulatedServer server,
+    required E2eeBackend server,
     required E2eeCipher cipher,
   }) async {
-    final backup = server.recoveryBackupOf(accountId);
+    final backup = await server.recoveryBackupOf(accountId);
     if (backup == null) {
       throw const E2eeRecoveryFailed('no recovery backup for this account');
     }
@@ -79,20 +77,25 @@ class E2eeDevice {
   }
 
   final String accountId;
-  final SimulatedServer _server;
+  final E2eeBackend _server;
   final E2eeCipher _cipher;
   final List<int> _seed;
   final SecretKey _dataKey;
   final String _dataKeyId;
-  late final SimpleKeyPair _keyPair;
+  late SimpleKeyPair _keyPair;
+  Future<void>? _ready;
 
   /// Completes once the key pair exists and its public half is published.
-  late final Future<void> ready;
+  /// A failure (e.g. backend offline) is retried on the next call.
+  Future<void> get ready => _ready ??= _init().catchError((Object error) {
+    _ready = null;
+    throw error;
+  });
 
   Future<void> _init() async {
     _keyPair = await _cipher.keyPairFromSeed(_seed);
     final publicKey = await _keyPair.extractPublicKey();
-    _server.registerPublicKey(accountId, publicKey.bytes);
+    await _server.putPublicKey(accountId, publicKey.bytes);
   }
 
   static String _recoveryAad(String accountId) => 'recovery|$accountId';
@@ -120,7 +123,7 @@ class E2eeDevice {
       _dataKey,
       aad: _recordAad(recordId),
     );
-    _server.putRecord(
+    await _server.putRecord(
       EncryptedRecord(
         id: recordId,
         ownerId: accountId,
@@ -134,7 +137,7 @@ class E2eeDevice {
   Future<List<Place>> downloadDiary() async {
     await ready;
     return [
-      for (final record in _server.recordsOf(accountId))
+      for (final record in await _server.recordsOf(accountId))
         PlaceCodec.fromJson(
           await _cipher.openJson(
             record.payload,
@@ -176,7 +179,7 @@ class E2eeDevice {
     );
     final grants = <String, WrappedKey>{};
     for (final recipientId in {accountId, ...recipientIds}) {
-      final publicKey = _server.publicKeyOf(recipientId);
+      final publicKey = await _server.publicKeyOf(recipientId);
       if (publicKey == null) {
         throw E2eeAccessDenied('$recipientId has no public key');
       }
@@ -187,7 +190,7 @@ class E2eeDevice {
         recipientPublicKey: publicKey,
       );
     }
-    _server.putCollection(
+    await _server.putCollection(
       SharedCollection(
         id: collectionId,
         ownerId: accountId,
@@ -201,7 +204,7 @@ class E2eeDevice {
   /// Opens a collection shared with this account.
   Future<SharedCollectionContent> openCollection(String collectionId) async {
     await ready;
-    final wrapped = _server.wrappedKeyFor(collectionId, accountId);
+    final wrapped = await _server.wrappedKeyFor(collectionId, accountId);
     if (wrapped == null) {
       throw E2eeAccessDenied('no key for $accountId in $collectionId');
     }
@@ -229,7 +232,7 @@ class E2eeDevice {
     WrappedKey wrapped,
   ) async {
     await ready;
-    final collection = _server.collection(collectionId);
+    final collection = await _server.collection(collectionId);
     if (collection == null) {
       throw E2eeAccessDenied('collection $collectionId does not exist');
     }
@@ -244,15 +247,12 @@ class E2eeDevice {
   /// Removes [recipientId] and rotates the key so future versions are
   /// unreadable for them. Copies already decrypted cannot be erased.
   Future<void> revokeAccess(String collectionId, String recipientId) async {
-    final own = _server.wrappedKeyFor(collectionId, accountId);
+    final own = await _server.wrappedKeyFor(collectionId, accountId);
     if (own == null) {
       throw E2eeAccessDenied('only the owner can revoke access');
     }
     final content = await _openRaw(collectionId, own);
-    final remaining = _server
-        .collection(collectionId)!
-        .grants
-        .keys
+    final remaining = (await _server.collection(collectionId))!.grants.keys
         .where((id) => id != recipientId && id != accountId)
         .toList();
     await _publish(collectionId, content, remaining);
@@ -278,7 +278,7 @@ class E2eeDevice {
       key,
       aad: _recoveryAad(accountId),
     );
-    _server.putRecoveryBackup(
+    await _server.putRecoveryBackup(
       accountId,
       RecoveryBackup(salt: salt, iterations: iterations, payload: payload),
     );

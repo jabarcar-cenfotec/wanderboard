@@ -6,7 +6,6 @@ import '../features/boards/presentation/board_detail_screen.dart';
 import '../features/boards/presentation/home_screen.dart';
 import '../features/places/presentation/place_detail_screen.dart';
 import '../features/privacy/presentation/privacy_screen.dart';
-import '../features/privacy/presentation/server_inspector_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/reviews/presentation/review_editor_screen.dart';
 import '../core/navigation/routes.dart';
@@ -65,13 +64,6 @@ GoRouter createRouter() {
         parentNavigatorKey: rootKey,
         path: Routes.privacy,
         builder: (context, state) => const PrivacyScreen(),
-        routes: [
-          GoRoute(
-            parentNavigatorKey: rootKey,
-            path: 'server',
-            builder: (context, state) => const ServerInspectorScreen(),
-          ),
-        ],
       ),
       GoRoute(
         parentNavigatorKey: rootKey,

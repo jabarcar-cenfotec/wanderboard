@@ -10,6 +10,8 @@ import '../features/places/data/in_memory_place_repository.dart';
 import '../features/places/domain/place_repository.dart';
 import '../features/privacy/application/e2ee_environment.dart';
 import '../features/privacy/data/e2ee_cipher.dart';
+import '../features/privacy/data/in_memory_e2ee_backend.dart';
+import '../features/privacy/domain/e2ee_backend.dart';
 import '../features/profile/data/mock_profile.dart';
 import 'app_scope.dart';
 import 'device_frame.dart';
@@ -20,6 +22,8 @@ class WanderboardApp extends StatefulWidget {
     super.key,
     this.fonts = const GoogleFontResolver(),
     this.cipher,
+    this.backend,
+    this.adminUrl,
   });
 
   /// Injected so tests can avoid network font fetching.
@@ -27,6 +31,12 @@ class WanderboardApp extends StatefulWidget {
 
   /// Injected so tests can lower the recovery key-derivation cost.
   final E2eeCipher? cipher;
+
+  /// Backend for the E2EE proof of concept; in memory when omitted.
+  final E2eeBackend? backend;
+
+  /// Admin panel of [backend], shown on the privacy screen.
+  final Uri? adminUrl;
 
   @override
   State<WanderboardApp> createState() => _WanderboardAppState();
@@ -38,6 +48,8 @@ class _WanderboardAppState extends State<WanderboardApp> {
   late final FakeAuthService _auth = FakeAuthService();
   late final E2eeEnvironment _e2ee = E2eeEnvironment(
     places: _places,
+    backend: widget.backend ?? InMemoryE2eeBackend(),
+    adminUrl: widget.adminUrl,
     cipher: widget.cipher,
   );
   late final ThemeData _theme = AppTheme.light(fonts: widget.fonts);

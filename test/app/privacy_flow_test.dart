@@ -16,6 +16,7 @@ void main() {
       WanderboardApp(
         fonts: testFonts,
         cipher: E2eeCipher(recoveryIterations: 1000),
+        adminUrl: Uri.parse('http://localhost:8080/admin'),
       ),
     );
     await tester.pumpAndSettle();
@@ -43,19 +44,15 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('E2E-01 the diary is synced encrypted; the server view has '
-      'no clear notes', (tester) async {
+  testWidgets('E2E-01 the diary is synced encrypted and the server '
+      'admin panel is linked', (tester) async {
     await openPrivacy(tester);
 
     expect(find.textContaining('lugares cifrados en el servidor'), findsOne);
     expect(find.text('0 lugares cifrados en el servidor'), findsNothing);
-
-    await tester.tap(find.text('Ver lo que guarda el servidor'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Vista del servidor'), findsOne);
-    expect(find.textContaining('cipherText'), findsWidgets);
-    expect(find.textContaining('zapatos para barro'), findsNothing);
+    expect(find.text('http://localhost:8080/admin'), findsOne);
+    expect(find.text('Abrir panel del servidor'), findsOne);
+    expect(find.textContaining('No se pudo conectar'), findsNothing);
   });
 
   testWidgets('E2E-02 share with Sofía, block an unauthorized account, '

@@ -5,7 +5,6 @@ abstract final class Routes {
   static const profile = '/profile';
   static const add = '/add';
   static const privacy = '/privacy';
-  static const privacyServer = '/privacy/server';
 
   /// "Mis lugares" opened on one of its lists (`pendientes`, `historial`, `colecciones`).
   static String myPlaces(String list) => '$home?lista=$list';

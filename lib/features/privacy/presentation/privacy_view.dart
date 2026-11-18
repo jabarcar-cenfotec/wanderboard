@@ -24,6 +24,8 @@ class AccessResult {
 class PrivacyViewData {
   const PrivacyViewData({
     required this.syncedCount,
+    required this.syncError,
+    required this.adminUrl,
     required this.boards,
     required this.selectedBoardId,
     required this.includeNotes,
@@ -37,6 +39,12 @@ class PrivacyViewData {
   });
 
   final int syncedCount;
+
+  /// Set when the backend could not be reached.
+  final String? syncError;
+
+  /// Admin panel of the backend, shown so the demo can open it.
+  final String? adminUrl;
   final List<Board> boards;
   final String selectedBoardId;
   final bool includeNotes;
@@ -56,6 +64,7 @@ class PrivacyView extends StatefulWidget {
     required this.data,
     required this.onBack,
     required this.onOpenServer,
+    required this.onRetrySync,
     required this.onSelectBoard,
     required this.onIncludeNotes,
     required this.onShare,
@@ -69,6 +78,7 @@ class PrivacyView extends StatefulWidget {
   final PrivacyViewData data;
   final VoidCallback onBack;
   final VoidCallback onOpenServer;
+  final VoidCallback onRetrySync;
   final ValueChanged<String> onSelectBoard;
   final ValueChanged<bool> onIncludeNotes;
   final VoidCallback onShare;
@@ -128,14 +138,43 @@ class _PrivacyViewState extends State<PrivacyView> {
                 '${data.syncedCount} lugares cifrados en el servidor',
                 style: tokens.text.bodyStrong,
               ),
-              SizedBox(height: s.md),
-              _Own(
-                child: SecondaryButton(
-                  label: 'Ver lo que guarda el servidor',
-                  icon: WanderIcons.lock,
-                  onPressed: widget.onOpenServer,
+              if (data.syncError != null) ...[
+                SizedBox(height: s.sm),
+                Text(
+                  'No se pudo conectar con el servidor. ¿Está corriendo el '
+                  'backend local?',
+                  style: tokens.text.caption.copyWith(color: c.error),
                 ),
-              ),
+                SizedBox(height: s.sm),
+                _Own(
+                  child: GhostButton(
+                    label: 'Reintentar sincronización',
+                    onPressed: widget.onRetrySync,
+                  ),
+                ),
+              ],
+              if (data.adminUrl case final url?) ...[
+                SizedBox(height: s.md),
+                Text(
+                  'Compruébalo en el panel del servidor:',
+                  style: tokens.text.caption,
+                ),
+                SelectableText(
+                  url,
+                  style: tokens.text.caption.copyWith(
+                    fontFamily: 'monospace',
+                    color: c.slate,
+                  ),
+                ),
+                SizedBox(height: s.sm),
+                _Own(
+                  child: SecondaryButton(
+                    label: 'Abrir panel del servidor',
+                    icon: WanderIcons.lock,
+                    onPressed: widget.onOpenServer,
+                  ),
+                ),
+              ],
             ],
           ),
           _Section(

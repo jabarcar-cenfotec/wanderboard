@@ -19,6 +19,12 @@ class SealedPayload {
   final List<int> cipherText;
   final List<int> mac;
 
+  factory SealedPayload.fromJson(Map<String, Object?> json) => SealedPayload(
+    nonce: base64Decode(json['nonce']! as String),
+    cipherText: base64Decode(json['cipherText']! as String),
+    mac: base64Decode(json['mac']! as String),
+  );
+
   Map<String, Object?> toJson() => {
     'nonce': base64Encode(nonce),
     'cipherText': base64Encode(cipherText),
@@ -47,6 +53,15 @@ class EncryptedRecord {
   final String version;
   final SealedPayload payload;
 
+  factory EncryptedRecord.fromJson(Map<String, Object?> json) =>
+      EncryptedRecord(
+        id: json['id']! as String,
+        ownerId: json['ownerId']! as String,
+        keyId: json['keyId']! as String,
+        version: json['cryptoVersion']! as String,
+        payload: SealedPayload.fromJson(json),
+      );
+
   EncryptedRecord withPayload(SealedPayload next) => EncryptedRecord(
     id: id,
     ownerId: ownerId,
@@ -74,6 +89,13 @@ class WrappedKey {
     required this.payload,
   });
 
+  factory WrappedKey.fromJson(Map<String, Object?> json) => WrappedKey(
+    keyId: json['keyId']! as String,
+    recipientId: json['recipientId']! as String,
+    ephemeralPublicKey: base64Decode(json['ephemeralPublicKey']! as String),
+    payload: SealedPayload.fromJson(json),
+  );
+
   final String keyId;
   final String recipientId;
   final List<int> ephemeralPublicKey;
@@ -98,6 +120,22 @@ class SharedCollection {
     required this.content,
     required this.grants,
   });
+
+  factory SharedCollection.fromJson(Map<String, Object?> json) {
+    final grants = [
+      for (final grant in json['grants']! as List)
+        WrappedKey.fromJson((grant as Map).cast<String, Object?>()),
+    ];
+    return SharedCollection(
+      id: json['id']! as String,
+      ownerId: json['ownerId']! as String,
+      keyId: json['keyId']! as String,
+      content: SealedPayload.fromJson(
+        (json['content']! as Map).cast<String, Object?>(),
+      ),
+      grants: {for (final grant in grants) grant.recipientId: grant},
+    );
+  }
 
   final String id;
   final String ownerId;
@@ -125,6 +163,12 @@ class RecoveryBackup {
     required this.iterations,
     required this.payload,
   });
+
+  factory RecoveryBackup.fromJson(Map<String, Object?> json) => RecoveryBackup(
+    salt: base64Decode(json['salt']! as String),
+    iterations: json['iterations']! as int,
+    payload: SealedPayload.fromJson(json),
+  );
 
   final List<int> salt;
   final int iterations;

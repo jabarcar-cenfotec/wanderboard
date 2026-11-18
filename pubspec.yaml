@@ -42,6 +42,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   cryptography: ^2.9.0
+  http: ^1.6.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -52,6 +53,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  e2ee_backend:
+    path: backend
+  shelf: ^1.4.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

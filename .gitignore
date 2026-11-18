@@ -46,3 +46,7 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Local E2EE demo backend data
+/backend/data.json
+/backend/.dart_tool/
