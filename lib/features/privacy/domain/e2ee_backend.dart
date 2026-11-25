@@ -18,6 +18,9 @@ abstract interface class E2eeBackend {
   /// Only returns the envelope when [accountId] was granted access.
   Future<WrappedKey?> wrappedKeyFor(String collectionId, String accountId);
 
+  /// Collections other accounts shared with [accountId] (never its own).
+  Future<List<InboxEntry>> inboxOf(String accountId);
+
   Future<void> putRecoveryBackup(String accountId, RecoveryBackup backup);
 
   Future<RecoveryBackup?> recoveryBackupOf(String accountId);

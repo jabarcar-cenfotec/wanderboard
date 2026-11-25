@@ -5,6 +5,7 @@ import '../../places/domain/place_repository.dart';
 import '../data/e2ee_cipher.dart';
 import '../domain/e2ee_backend.dart';
 import '../domain/encrypted_models.dart';
+import 'demo_role.dart';
 import 'e2ee_device.dart';
 
 /// Test account that receives a shared collection.
@@ -20,6 +21,7 @@ class E2eeEnvironment extends ChangeNotifier {
     this.adminUrl,
     E2eeCipher? cipher,
     String? sessionTag,
+    this.role = DemoRole.standalone,
   }) : cipher = cipher ?? E2eeCipher(),
        sessionTag = sessionTag ?? E2eeCipher.randomId().substring(0, 4) {
     // Keys live in memory, so each app launch is a new set of accounts;
@@ -27,8 +29,11 @@ class E2eeEnvironment extends ChangeNotifier {
     me = _device('mi-cuenta');
     guest = _device('sofia');
     intruder = _device('cuenta-no-autorizada');
-    _places.addListener(_scheduleSync);
-    _scheduleSync();
+    // The recipient phone has no diary of its own to sync.
+    if (role != DemoRole.recipient) {
+      _places.addListener(_scheduleSync);
+      _scheduleSync();
+    }
   }
 
   final PlaceRepository _places;
@@ -38,6 +43,17 @@ class E2eeEnvironment extends ChangeNotifier {
   /// Admin panel of the backend, when it has one.
   final Uri? adminUrl;
   final String sessionTag;
+
+  /// Which phone of the two-phone demo this instance is.
+  final DemoRole role;
+
+  /// Whether the guest is another app instance instead of the internal
+  /// test account.
+  bool get hasRemoteGuest => role == DemoRole.sender;
+
+  /// Account that shares go to and that access is revoked from.
+  String get guestAccountId =>
+      hasRemoteGuest ? DemoRole.remoteGuestId : guest.accountId;
 
   late final E2eeDevice me;
   late final E2eeDevice guest;
@@ -92,29 +108,36 @@ class E2eeEnvironment extends ChangeNotifier {
     }
   }
 
-  Future<void> shareWithGuest({
+  /// Returns false, sharing nothing, when the remote guest phone has not
+  /// published its key yet.
+  Future<bool> shareWithGuest({
     required String collectionTitle,
     required List<Place> places,
     required bool includeNotes,
   }) async {
+    if (hasRemoteGuest &&
+        await backend.publicKeyOf(DemoRole.remoteGuestId) == null) {
+      return false;
+    }
     final id = sharedCollectionId ?? E2eeCipher.randomId();
     await me.shareCollection(
       collectionId: id,
       title: collectionTitle,
       places: places,
-      recipientIds: [guest.accountId],
+      recipientIds: [guestAccountId],
       includeNotes: includeNotes,
     );
     sharedCollectionId = id;
     sharedTitle = collectionTitle;
     guestHasAccess = true;
     notifyListeners();
+    return true;
   }
 
   Future<void> revokeGuest() async {
     final id = sharedCollectionId;
     if (id == null) return;
-    await me.revokeAccess(id, guest.accountId);
+    await me.revokeAccess(id, guestAccountId);
     guestHasAccess = false;
     notifyListeners();
   }

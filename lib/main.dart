@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app/wanderboard_app.dart';
+import 'features/privacy/application/demo_role.dart';
 import 'features/privacy/data/http_e2ee_backend.dart';
 
 /// Local E2EE demo backend (see backend/README.md). Override with
@@ -12,5 +13,9 @@ const _serverUrl = String.fromEnvironment(
 
 void main() {
   final backend = HttpE2eeBackend(Uri.parse(_serverUrl));
-  runApp(WanderboardApp(backend: backend, adminUrl: backend.adminUrl));
+  // ?rol=emisor and ?rol=sofia open the two phones of the sharing demo.
+  final role = DemoRole.parse(Uri.base.queryParameters['rol']);
+  runApp(
+    WanderboardApp(backend: backend, adminUrl: backend.adminUrl, role: role),
+  );
 }

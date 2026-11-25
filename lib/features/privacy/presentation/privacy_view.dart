@@ -36,6 +36,7 @@ class PrivacyViewData {
     required this.recoveryPhrase,
     required this.restoreResult,
     required this.busy,
+    this.remoteGuest = false,
   });
 
   final int syncedCount;
@@ -55,6 +56,9 @@ class PrivacyViewData {
   final String? recoveryPhrase;
   final AccessResult? restoreResult;
   final bool busy;
+
+  /// The guest is another phone, so it cannot be opened from here.
+  final bool remoteGuest;
 }
 
 /// "Privacidad y cifrado": proof of concept of end-to-end encryption.
@@ -223,12 +227,18 @@ class _PrivacyViewState extends State<PrivacyView> {
                   style: tokens.text.bodyStrong,
                 ),
                 SizedBox(height: s.sm),
-                _Own(
-                  child: SecondaryButton(
-                    label: 'Abrir como ${data.guestName}',
-                    onPressed: busy ? null : widget.onOpenAsGuest,
+                if (data.remoteGuest)
+                  Text(
+                    '${data.guestName} la abre en su propio teléfono.',
+                    style: tokens.text.caption,
+                  )
+                else
+                  _Own(
+                    child: SecondaryButton(
+                      label: 'Abrir como ${data.guestName}',
+                      onPressed: busy ? null : widget.onOpenAsGuest,
+                    ),
                   ),
-                ),
                 SizedBox(height: s.sm),
                 _Own(
                   child: SecondaryButton(

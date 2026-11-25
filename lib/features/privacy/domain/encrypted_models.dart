@@ -155,6 +155,26 @@ class SharedCollection {
   };
 }
 
+/// A notification that someone shared a collection with an account.
+@immutable
+class InboxEntry {
+  const InboxEntry({
+    required this.collectionId,
+    required this.ownerId,
+    required this.keyId,
+  });
+
+  factory InboxEntry.fromJson(Map<String, Object?> json) => InboxEntry(
+    collectionId: json['collectionId']! as String,
+    ownerId: json['ownerId']! as String,
+    keyId: json['keyId']! as String,
+  );
+
+  final String collectionId;
+  final String ownerId;
+  final String keyId;
+}
+
 /// The device keys encrypted with a key derived from the recovery phrase.
 @immutable
 class RecoveryBackup {

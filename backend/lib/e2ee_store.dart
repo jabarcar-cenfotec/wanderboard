@@ -61,6 +61,25 @@ class E2eeStore {
     return null;
   }
 
+  /// Collections shared with [accountId] by someone else (the owner's own
+  /// grant is not an incoming share).
+  List<Map<String, Object?>> inbox(String accountId) {
+    final inbox = <Map<String, Object?>>[];
+    for (final entry in _section('collections').entries) {
+      final collection = (entry.value as Map).cast<String, Object?>();
+      final ownerId = collection['ownerId'];
+      if (ownerId == accountId) continue;
+      final grant = this.grant(entry.key, accountId);
+      if (grant == null) continue;
+      inbox.add({
+        'collectionId': entry.key,
+        'ownerId': ownerId,
+        'keyId': (grant as Map)['keyId'],
+      });
+    }
+    return inbox;
+  }
+
   void putRecoveryBackup(String accountId, Object? json) =>
       _write(() => _section('recoveryBackups')[accountId] = json);
 

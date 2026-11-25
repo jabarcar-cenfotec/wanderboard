@@ -91,6 +91,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           recoveryPhrase: e2ee.recoveryPhrase,
           restoreResult: _restore,
           busy: _busy,
+          remoteGuest: e2ee.hasRemoteGuest,
         ),
         onBack: () =>
             context.canPop() ? context.pop() : context.go(Routes.profile),
@@ -103,12 +104,18 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         onIncludeNotes: (value) => setState(() => _includeNotes = value),
         onShare: () => _run(() async {
           final board = scope.boards.byId(boardId)!;
-          await e2ee.shareWithGuest(
+          final shared = await e2ee.shareWithGuest(
             collectionTitle: board.title,
             places: scope.places.inBoard(board.id),
             includeNotes: _includeNotes,
           );
-          _access = null;
+          _access = shared
+              ? null
+              : const AccessResult(
+                  title: 'El teléfono de Sofía aún no está conectado.',
+                  granted: false,
+                  lines: ['Abre la app con ?rol=sofia y vuelve a compartir.'],
+                );
         }),
         onOpenAsGuest: () => _openAs(e2ee, e2ee.guest, guestName),
         onOpenAsIntruder: () =>

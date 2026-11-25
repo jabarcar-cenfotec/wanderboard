@@ -17,7 +17,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Compartir colección'), findsOneWidget);
-    expect(find.text('wanderboard.app/b/costa-rica'), findsOneWidget);
+    expect(find.text('spotly.app/b/costa-rica'), findsOneWidget);
 
     await tester.tap(find.text('Correo'));
     await tester.pumpAndSettle();

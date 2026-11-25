@@ -111,6 +111,12 @@ class HttpE2eeBackend implements E2eeBackend {
   }
 
   @override
+  Future<List<InboxEntry>> inboxOf(String accountId) async {
+    final json = await _get(['inbox', accountId]) as List? ?? const [];
+    return [for (final item in json) InboxEntry.fromJson(_map(item))];
+  }
+
+  @override
   Future<void> putRecoveryBackup(String accountId, RecoveryBackup backup) =>
       _put(['recovery', accountId], backup.toJson());
 

@@ -6,21 +6,26 @@ import '../features/boards/presentation/board_detail_screen.dart';
 import '../features/boards/presentation/home_screen.dart';
 import '../features/places/presentation/place_detail_screen.dart';
 import '../features/privacy/presentation/privacy_screen.dart';
+import '../features/privacy/presentation/sofia_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/reviews/presentation/review_editor_screen.dart';
 import '../core/navigation/routes.dart';
 import 'home_shell.dart';
 
-GoRouter createRouter() {
+GoRouter createRouter({String initialLocation = Routes.onboarding}) {
   final rootKey = GlobalKey<NavigatorState>();
 
   return GoRouter(
     navigatorKey: rootKey,
-    initialLocation: Routes.onboarding,
+    initialLocation: initialLocation,
     routes: [
       GoRoute(
         path: Routes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: sofiaRoute,
+        builder: (context, state) => const SofiaScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) =>

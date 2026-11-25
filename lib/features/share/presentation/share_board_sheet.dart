@@ -45,7 +45,7 @@ class ShareBoardSheet extends StatefulWidget {
 class _ShareBoardSheetState extends State<ShareBoardSheet> {
   bool _includeNotes = false;
 
-  String get _link => 'wanderboard.app/b/${widget.summary.board.id}';
+  String get _link => 'spotly.app/b/${widget.summary.board.id}';
 
   @override
   Widget build(BuildContext context) {

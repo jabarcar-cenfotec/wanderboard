@@ -89,6 +89,46 @@ void main() {
     }
   });
 
+  test('the inbox lists what others shared, never the owner\'s own, and '
+      'revoking removes it', () async {
+    final owner = E2eeDevice(accountId: 'me', server: backend, cipher: cipher);
+    final guest = E2eeDevice(
+      accountId: 'guest',
+      server: backend,
+      cipher: cipher,
+    );
+    final intruder = E2eeDevice(
+      accountId: 'intruder',
+      server: backend,
+      cipher: cipher,
+    );
+    await Future.wait([owner.ready, guest.ready, intruder.ready]);
+    await owner.shareCollection(
+      collectionId: 'col-1',
+      title: 'Rincones de café',
+      places: [place],
+      recipientIds: ['guest'],
+      includeNotes: false,
+    );
+
+    final inbox = await backend.inboxOf('guest');
+    expect(inbox.single.collectionId, 'col-1');
+    expect(inbox.single.ownerId, 'me');
+    expect(inbox.single.keyId, isNotEmpty);
+    expect(await backend.inboxOf('me'), isEmpty);
+    expect(await backend.inboxOf('intruder'), isEmpty);
+    expect(await backend.inboxOf('nobody'), isEmpty);
+    final raw = await http.get(
+      Uri.parse('http://localhost:${server.port}/inbox/guest'),
+    );
+    expect(raw.headers['access-control-allow-origin'], '*');
+    expect(raw.headers['content-type'], contains('application/json'));
+
+    await owner.revokeAccess('col-1', 'guest');
+
+    expect(await backend.inboxOf('guest'), isEmpty);
+  });
+
   test('the admin search finds no clear text', () async {
     final owner = E2eeDevice(accountId: 'me', server: backend, cipher: cipher);
     await owner.uploadPlace(place);

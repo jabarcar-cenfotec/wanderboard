@@ -43,6 +43,18 @@ class InMemoryE2eeBackend implements E2eeBackend {
   ) async => _collections[collectionId]?.grants[accountId];
 
   @override
+  Future<List<InboxEntry>> inboxOf(String accountId) async => [
+    for (final collection in _collections.values)
+      if (collection.ownerId != accountId &&
+          collection.grants[accountId] != null)
+        InboxEntry(
+          collectionId: collection.id,
+          ownerId: collection.ownerId,
+          keyId: collection.grants[accountId]!.keyId,
+        ),
+  ];
+
+  @override
   Future<void> putRecoveryBackup(
     String accountId,
     RecoveryBackup backup,

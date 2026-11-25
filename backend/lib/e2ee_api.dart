@@ -17,6 +17,7 @@ const _corsHeaders = {
 ///   PUT/GET /keys/{account}
 ///   PUT     /records/{owner}/{record}    GET /records/{owner}
 ///   PUT/GET /collections/{id}            GET /collections/{id}/grants/{account}
+///   GET     /inbox/{account}   collections others shared with the account
 ///   PUT/GET /recovery/{account}
 ///   GET     /admin, /admin/flujo, /admin/data, /admin/search?q=
 ///   POST    /admin/reset
@@ -74,6 +75,9 @@ Handler e2eeApi(E2eeStore store, {String storageLabel = 'memoria'}) {
         return _jsonOr404(store.collection(id));
       case ('GET', ['collections', final id, 'grants', final account]):
         return _jsonOr404(store.grant(id, account));
+
+      case ('GET', ['inbox', final account]):
+        return _json(store.inbox(account));
 
       case ('PUT', ['recovery', final account]):
         store.putRecoveryBackup(account, await body());
